@@ -37,10 +37,10 @@ func init() {
 查询所有的表
 */
 func GetAllTable() []string {
-	sqlStr := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + databaseName + "'"
 	if db == nil {
 		panic("db is nil")
 	}
+	sqlStr := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + databaseName + "'"
 	rows, err := db.Query(sqlStr)
 	defer rows.Close()
 
@@ -55,6 +55,5 @@ func GetAllTable() []string {
 		fmt.Println("GetAllTable execute fail,", err.Error())
 		panic(err)
 	}
-
 	return nil
 }
