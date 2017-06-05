@@ -4,7 +4,7 @@ mybatis mapper 生成器
 package main
 
 import (
-	"db"
+	"golang/db"
 )
 
 func main() {
