@@ -43,13 +43,13 @@ func GetTableName() []string {
 	sqlStr := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + databaseName + "'"
 	rows, err := db.Query(sqlStr)
 	defer rows.Close()
-	
+
 	if err == nil {
-		var nameSlice = make([]string,2,5)
+		var nameSlice = make([]string, 0, 5)
 		var tableName string = ""
-		for rows.Next(){
+		for rows.Next() {
 			rows.Scan(&tableName)
-			nameSlice = append(nameSlice,tableName)
+			nameSlice = append(nameSlice, tableName)
 		}
 		return nameSlice
 	} else {
@@ -57,4 +57,24 @@ func GetTableName() []string {
 		panic(err)
 	}
 	return nil
+}
+
+/**
+查询表的所有字段
+*/
+func GetTableColumn(tableName string) []Column {
+	sqlStr := "SELECT column_name,column_comment,data_type FROM information_schema.COLUMNS WHERE table_name='" + tableName + "' AND table_schema = '" + databaseName + "'"
+	rows, err := db.Query(sqlStr)
+	columnSlice := make([]Column, 0, 10)
+	if err == nil {
+		var name string
+		var comment string
+		var dataType string
+		for rows.Next() {
+			rows.Scan(&name, &comment, &dataType)
+			columnSlice = append(columnSlice, Column{name, comment, dataType})
+		}
+		return columnSlice
+	}
+	return columnSlice
 }
