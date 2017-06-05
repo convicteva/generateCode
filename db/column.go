@@ -1,3 +1,6 @@
+/**
+数据库字段相关信息
+*/
 package db
 
 var mysqlTypeToJava = make(map[string]string)

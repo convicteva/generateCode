@@ -12,6 +12,13 @@ import (
 )
 
 func main() {
+	testTableInfo()
+}
+
+/**
+测试获取表的信息
+*/
+func testTableInfo() {
 	tableNameSlice := db.GetTableName()
 	fmt.Println(len(tableNameSlice))
 	for _, v := range tableNameSlice {
