@@ -13,7 +13,7 @@ const (
 	ip           string = "192.168.157.128:3306"
 	databaseName string = "cs"
 	username     string = "root"
-	passwd              = "Abc123!!!"
+	passwd              = "Abc123!@#"
 	maxOpenConns int    = 5
 	maxIdleConns int    = 2
 )
@@ -36,21 +36,22 @@ func init() {
 /**
 查询所有的表
 */
-func GetAllTable() []string {
+func GetTableName() []string {
 	if db == nil {
 		panic("db is nil")
 	}
 	sqlStr := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + databaseName + "'"
 	rows, err := db.Query(sqlStr)
 	defer rows.Close()
-
+	
 	if err == nil {
-		if columns, err := rows.Columns(); err != nil {
-			column := columns[0]
-			fmt.Println(column)
-		} else {
-			fmt.Println("columns err")
+		var nameSlice = make([]string,2,5)
+		var tableName string = ""
+		for rows.Next(){
+			rows.Scan(&tableName)
+			nameSlice = append(nameSlice,tableName)
 		}
+		return nameSlice
 	} else {
 		fmt.Println("GetAllTable execute fail,", err.Error())
 		panic(err)
