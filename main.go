@@ -9,11 +9,18 @@ import (
 import (
 	"fmt"
 	"golang/db"
+	"golang/file"
 	"golang/util"
 )
 
 func main() {
-	testTableInfo()
+	createPackageTest()
+}
+
+func createPackageTest() {
+	packageName := "com.masz.demo"
+	dirInfo := file.CreatePackage(packageName)
+	file.GenerateBaseModel(dirInfo.BaseModelPath, packageName)
 }
 
 /**
