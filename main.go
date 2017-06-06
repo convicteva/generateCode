@@ -13,14 +13,33 @@ import (
 	"golang/util"
 )
 
+var packageName string = "com.masz.demo"
+
 func main() {
 	createPackageTest()
 }
 
 func createPackageTest() {
-	packageName := "com.masz.demo"
+	//生成相关目录
 	dirInfo := file.CreatePackage(packageName)
+	//生成BaseModel
 	file.GenerateBaseModel(dirInfo.BaseModelPath, packageName)
+
+	//TODO 生成BaseDao
+
+	//表对应的字段map
+	tableColumnMap := make(map[string][]db.Column)
+	//所有的表
+	tableNameSlice := db.GetTableName()
+	for _, v := range tableNameSlice {
+		tableColumnMap[v] = db.GetTableColumn(v)
+	}
+
+	//生成model
+	for tabelName, columns := range tableColumnMap {
+		file.GenerateMode(dirInfo.ModelPath, packageName, stringutil.FormatTableNameToModelName(tabelName), db.GetJavaProertyByColumn(columns))
+	}
+
 }
 
 /**

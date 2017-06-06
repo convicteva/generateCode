@@ -11,6 +11,9 @@ import (
 	"strings"
 )
 
+/**
+生成BaseModel
+*/
 func GenerateBaseModel(filepath, packageName string) {
 	fullPath := filepath + pathSeparator + "BaseModel.java"
 	//删除已经存在的BaseModel
@@ -19,16 +22,12 @@ func GenerateBaseModel(filepath, packageName string) {
 	f, _ := os.OpenFile(fullPath, os.O_CREATE, os.ModePerm)
 	defer f.Close()
 
-	//列定义
-	columnSlice := make([]db.Column, 0, 4)
-	columnSlice = append(columnSlice, db.Column{"id", "", "BIGINT"})
-	columnSlice = append(columnSlice, db.Column{"order_id", "订单id", "BIGINT"})
-	columnSlice = append(columnSlice, db.Column{"remark", "", "VARCHAR"})
-	columnSlice = append(columnSlice, db.Column{"create_time", "", "TIMESTAMP"})
-	columnSlice = append(columnSlice, db.Column{"status", "", "INT"})
+	//基本列
+	columnSlice := db.GetBaseColumn()
+	fmt.Println(columnSlice)
 
 	//列对应的属性
-	propertySlice := db.GetJavaProertyByColumn(columnSlice)
+	propertySlice := db.GetJavaBaseProertyByColumn(columnSlice)
 
 	javaImportSlice := generateImportByProperties(propertySlice)
 
@@ -120,6 +119,53 @@ func generateGeterSeterFuncByProperties(propertiesSlice []db.JavaProperty) []str
 	return getSetFunSlice
 }
 
-func GenerateMode(packageName, modelName string) {
+/**
+生成model
+*/
+func GenerateMode(filepath, packageName, modelName string, propertySlice []db.JavaProperty) {
+	fullPath := filepath + pathSeparator + modelName + ".java"
+	//删除已经存在的BaseModel
+	os.Remove(fullPath)
+	//创建BaseModel
+	f, _ := os.OpenFile(fullPath, os.O_CREATE, os.ModePerm)
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	fmt.Fprintln(w, "package "+packageName+".model;")
+	fmt.Fprintln(w, "import java.io.Serializable;")
+	fmt.Fprintln(w, "import "+packageName+".base.BaseModel;")
+
+	//导入
+	javaImportSlice := generateImportByProperties(propertySlice)
+	fmt.Fprintln(w, "import java.io.Serializable;")
+	if len(javaImportSlice) > 0 {
+		for _, v := range javaImportSlice {
+			fmt.Fprintln(w, v)
+		}
+	}
+
+	fmt.Fprintln(w, "public class "+modelName+" extends BaseModel {")
+	fmt.Fprintln(w, "")
+
+	//属性
+	propertiesSlice := generateJavaPropertiesByProperties(propertySlice)
+	if len(propertiesSlice) > 0 {
+		for _, v := range propertiesSlice {
+			fmt.Fprintln(w, v)
+		}
+	}
+	fmt.Fprintln(w, "")
+
+	//get set 方法
+	getSetFuncSlice := generateGeterSeterFuncByProperties(propertySlice)
+	if len(getSetFuncSlice) > 0 {
+		for _, s := range getSetFuncSlice {
+			fmt.Fprintln(w, s)
+		}
+	}
+
+	fmt.Fprintln(w, "}")
+
+	w.Flush()
 
 }

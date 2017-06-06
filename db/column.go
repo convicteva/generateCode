@@ -13,6 +13,10 @@ mysql 数据类型对应的jdbc  和 java 的数据类型
 */
 var MysqlTypeToJava = make(map[string]JdbcJavaTypeMap)
 
+//所有表中都会有的列，把放入到BaseModel中
+var BaseColumn = make([]Column, 0, 3)
+var baseColumnMap = make(map[string]string, 3)
+
 func init() {
 	//mysql 的数据类型对java 数据类型的转化
 
@@ -45,6 +49,19 @@ func init() {
 	//mysqlTypeToJava["BLOB"] = "java.util.Date"
 	//mysqlTypeToJava["TINYBLOB"] = "java.util.Date"
 
+	//基础列
+	BaseColumn = append(BaseColumn, Column{"id", "", "BIGINT"})
+	BaseColumn = append(BaseColumn, Column{"remark", "", "VARCHAR"})
+	BaseColumn = append(BaseColumn, Column{"create_time", "", "TIMESTAMP"})
+
+	//基础列对应的map，生成一般model 时，过滤使用
+	baseColumnMap["id"] = "id"
+	baseColumnMap["remark"] = "remark"
+	baseColumnMap["create_time"] = "create_time"
+}
+
+func GetBaseColumn() []Column {
+	return BaseColumn
 }
 
 /**
@@ -84,10 +101,26 @@ func (column *Column) getJavaType() string {
 	}
 }
 
-func GetJavaProertyByColumn(columns []Column) []JavaProperty {
+/**
+生成BaseModel 中的列的 java 属性
+*/
+func GetJavaBaseProertyByColumn(columns []Column) []JavaProperty {
 	propertySlice := make([]JavaProperty, 0, 10)
 	for _, c := range columns {
 		propertySlice = append(propertySlice, JavaProperty{stringutil.FormatColumnNameToProperty(c.Name), c.Comment, c.getJavaType()})
+	}
+	return propertySlice
+}
+
+/**
+根据column 获取java 的类型，去除BaseModel 中的列
+*/
+func GetJavaProertyByColumn(columns []Column) []JavaProperty {
+	propertySlice := make([]JavaProperty, 0, 10)
+	for _, c := range columns {
+		if _, exists := baseColumnMap[strings.ToLower(c.Name)]; !exists {
+			propertySlice = append(propertySlice, JavaProperty{stringutil.FormatColumnNameToProperty(c.Name), c.Comment, c.getJavaType()})
+		}
 	}
 	return propertySlice
 }
