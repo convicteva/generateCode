@@ -9,8 +9,8 @@ var MysqlTypeToJava = make(map[string]JdbcJavaTypeMap)
 jdbc  java 关系
 */
 type JdbcJavaTypeMap struct {
-	jdbcType string
-	javaType string
+	JdbcType string
+	JavaType string
 }
 
 func init() {

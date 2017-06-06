@@ -52,7 +52,7 @@ type JavaProperty Column
 func (column *Column) getJavaType() string {
 	v, exists := MysqlTypeToJava[strings.ToUpper(column.DataType)]
 	if exists {
-		return v.javaType
+		return v.JavaType
 	} else {
 		panic(column.DataType + ",mysql 数据类型映射未找到")
 	}

@@ -46,5 +46,8 @@ func createModel(dirInfo file.DirInfo, tableColumnMap map[string][]db.Column) {
 }
 
 func createMapper(dirInfo file.DirInfo, tableColumnMap map[string][]db.Column) {
-
+	//生成mapper
+	for tabelName, columns := range tableColumnMap {
+		file.GenerateMapper(dirInfo.MapperPath, packageName, stringutil.FormatTableNameToModelName(tabelName), tabelName, columns)
+	}
 }
