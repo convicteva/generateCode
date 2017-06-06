@@ -9,6 +9,7 @@ import (
 import (
 	"fmt"
 	"golang/db"
+	"golang/util"
 )
 
 func main() {
@@ -20,10 +21,13 @@ func main() {
 */
 func testTableInfo() {
 	tableNameSlice := db.GetTableName()
-	fmt.Println(len(tableNameSlice))
+
 	for _, v := range tableNameSlice {
-		fmt.Println("table name " + v)
+		fmt.Println(stringutil.FormatTableNameToModelName(v))
 		columnSlice := db.GetTableColumn(v)
 		fmt.Println(columnSlice)
+		for _, v := range columnSlice {
+			fmt.Println(stringutil.FormatColumnNameToProperty(v.Name))
+		}
 	}
 }
