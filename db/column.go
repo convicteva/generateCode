@@ -3,39 +3,42 @@
 */
 package db
 
-import "strings"
+import (
+	"golang/util"
+	"strings"
+)
 
 /**
 mysql 数据类型对应的jdbc  和 java 的数据类型
 */
-var mysqlTypeToJava = make(map[string]JdbcJavaTypeMap)
+var MysqlTypeToJava = make(map[string]JdbcJavaTypeMap)
 
 func init() {
 	//mysql 的数据类型对java 数据类型的转化
 
 	//数值
-	mysqlTypeToJava["int"] = JdbcJavaTypeMap{"INTEGER", "java.lang.Integer"}
-	mysqlTypeToJava["TINYINT"] = JdbcJavaTypeMap{"INTEGER", "java.lang.Integer"}
-	mysqlTypeToJava["SMALLINT"] = JdbcJavaTypeMap{"INTEGER", "java.lang.Integer"}
-	mysqlTypeToJava["MEDIUMINT"] = JdbcJavaTypeMap{"INTEGER", "java.lang.Integer"}
-	mysqlTypeToJava["INT"] = JdbcJavaTypeMap{"INTEGER", "java.lang.Integer"}
-	mysqlTypeToJava["INTEGER"] = JdbcJavaTypeMap{"INTEGER", "java.lang.Integer"}
-	mysqlTypeToJava["BIGINT"] = JdbcJavaTypeMap{"BIGINT", "java.lang.Long"}
-	mysqlTypeToJava["FLOAT"] = JdbcJavaTypeMap{"DECIMAL", "java.lang.Float"}
-	mysqlTypeToJava["DOUBLE"] = JdbcJavaTypeMap{"DECIMAL", "java.lang.Double"}
-	mysqlTypeToJava["DECIMAL"] = JdbcJavaTypeMap{"DECIMAL", "java.math.BigDecimal"}
+	MysqlTypeToJava["int"] = JdbcJavaTypeMap{"INTEGER", "Integer"}
+	MysqlTypeToJava["TINYINT"] = JdbcJavaTypeMap{"INTEGER", "Integer"}
+	MysqlTypeToJava["SMALLINT"] = JdbcJavaTypeMap{"INTEGER", "Integer"}
+	MysqlTypeToJava["MEDIUMINT"] = JdbcJavaTypeMap{"INTEGER", "Integer"}
+	MysqlTypeToJava["INT"] = JdbcJavaTypeMap{"INTEGER", "Integer"}
+	MysqlTypeToJava["INTEGER"] = JdbcJavaTypeMap{"INTEGER", "Integer"}
+	MysqlTypeToJava["BIGINT"] = JdbcJavaTypeMap{"BIGINT", "Long"}
+	MysqlTypeToJava["FLOAT"] = JdbcJavaTypeMap{"DECIMAL", "Float"}
+	MysqlTypeToJava["DOUBLE"] = JdbcJavaTypeMap{"DECIMAL", "Double"}
+	MysqlTypeToJava["DECIMAL"] = JdbcJavaTypeMap{"DECIMAL", "Double"}
 
 	//日期 DATE   TIME  YEAR  不支持
-	mysqlTypeToJava["DATETIME"] = JdbcJavaTypeMap{"DATE", "java.util.Date"}
-	mysqlTypeToJava["TIMESTAMP"] = JdbcJavaTypeMap{"TIMESTAMP", "java.util.Date"}
+	MysqlTypeToJava["DATETIME"] = JdbcJavaTypeMap{"DATE", "Date"}
+	MysqlTypeToJava["TIMESTAMP"] = JdbcJavaTypeMap{"TIMESTAMP", "Date"}
 
 	//字符串  二进制的不支持
-	mysqlTypeToJava["CHAR"] = JdbcJavaTypeMap{"CHAR", "java.lang.Character"}
-	mysqlTypeToJava["VARCHAR"] = JdbcJavaTypeMap{"VARCHAR", "java.lang.String"}
-	mysqlTypeToJava["TINYTEXT"] = JdbcJavaTypeMap{"VARCHAR", "java.lang.String"}
-	mysqlTypeToJava["TEXT"] = JdbcJavaTypeMap{"VARCHAR", "java.lang.String"}
-	mysqlTypeToJava["MEDIUMTEXT"] = JdbcJavaTypeMap{"VARCHAR", "java.lang.String"}
-	mysqlTypeToJava["LONGTEXT"] = JdbcJavaTypeMap{"LONGVARCHAR", "java.lang.String"}
+	MysqlTypeToJava["CHAR"] = JdbcJavaTypeMap{"CHAR", "char"}
+	MysqlTypeToJava["VARCHAR"] = JdbcJavaTypeMap{"VARCHAR", "String"}
+	MysqlTypeToJava["TINYTEXT"] = JdbcJavaTypeMap{"VARCHAR", "String"}
+	MysqlTypeToJava["TEXT"] = JdbcJavaTypeMap{"VARCHAR", "String"}
+	MysqlTypeToJava["MEDIUMTEXT"] = JdbcJavaTypeMap{"VARCHAR", "String"}
+	MysqlTypeToJava["LONGTEXT"] = JdbcJavaTypeMap{"LONGVARCHAR", "String"}
 
 	//mysqlTypeToJava["MEDIUMBLOB"] = "java.util.Date"
 	//mysqlTypeToJava["LONGBLOB"] = "java.util.Date"
@@ -45,7 +48,7 @@ func init() {
 }
 
 /**
-jdbc  java 三者关系
+jdbc  java 关系
 */
 type JdbcJavaTypeMap struct {
 	jdbcType string
@@ -65,14 +68,26 @@ type Column struct {
 }
 
 /**
+java 属性
+*/
+type JavaProperty Column
+
+/**
 把mysql 数据类型，转化成jdbc 和 java数据类型
 */
-func (column *Column) GetJavaType() JdbcJavaTypeMap {
-	v, exists := mysqlTypeToJava[strings.ToUpper(column.DataType)]
+func (column *Column) getJavaType() string {
+	v, exists := MysqlTypeToJava[strings.ToUpper(column.DataType)]
 	if exists {
-		return v
+		return v.javaType
 	} else {
 		panic(column.DataType + ",mysql 数据类型映射未找到")
 	}
+}
 
+func GetJavaProertyByColumn(columns []Column) []JavaProperty {
+	propertySlice := make([]JavaProperty, 0, 10)
+	for _, c := range columns {
+		propertySlice = append(propertySlice, JavaProperty{stringutil.FormatColumnNameToProperty(c.Name), c.Comment, c.getJavaType()})
+	}
+	return propertySlice
 }

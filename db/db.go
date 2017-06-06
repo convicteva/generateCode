@@ -22,7 +22,6 @@ var db *sql.DB = nil
 
 func init() {
 	sqlUrl := username + ":" + passwd + "@tcp(" + ip + ")/" + databaseName + "?charset=utf8"
-	fmt.Println(sqlUrl)
 	db, _ = sql.Open("mysql", sqlUrl)
 	if db != nil {
 		db.SetMaxOpenConns(maxOpenConns)
