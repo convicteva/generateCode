@@ -61,6 +61,13 @@ func GenerateMapper(filepath, packageName, modelName, tableName string, columnSl
 	}
 	fmt.Fprintln(w, ``)
 
+	//生成insert
+	updateSql := generateUpdateSql(modelFullPath, tableName, columnSlice)
+	for _, v := range updateSql {
+		fmt.Fprintln(w, v)
+	}
+	fmt.Fprintln(w, ``)
+
 	fmt.Fprintln(w, `</mapper>`)
 	w.Flush()
 
@@ -122,7 +129,7 @@ func generateColumnSql(columnSlice []db.Column) []string {
 */
 func generateInsertSql(modelFullPath, tableName string, columnSlice []db.Column) []string {
 	length := len(columnSlice)
-	sqlSlice := make([]string, 0, length*2+5)
+	sqlSlice := make([]string, 0, length*2+6)
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<insert id="insert" parameterType="`+modelFullPath+`">`)
 
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"INSERT INTO "+strings.ToUpper(tableName)+"(")
@@ -148,5 +155,27 @@ func generateInsertSql(modelFullPath, tableName string, columnSlice []db.Column)
 
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</insert>`)
 
+	return sqlSlice
+}
+
+/**
+生成update 语句
+*/
+func generateUpdateSql(modelFullPath, tableName string, columnSlice []db.Column) []string {
+	length := len(columnSlice)
+	sqlSlice := make([]string, 0, length*3+5)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<update id="update" parameterType="`+modelFullPath+`">`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"UPDATE "+strings.ToUpper(tableName))
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"<set>")
+	for _, v := range columnSlice {
+		if !strings.EqualFold(strings.ToUpper(v.Name), "ID") {
+			sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+stringutil.FormatColumnNameToProperty(v.Name)+`!=null">`)
+			sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+strings.ToUpper(v.Name)+`=#{`+stringutil.FormatTableNameToModelName(v.Name)+`,jdbcType=`+db.GetJdbcTypeByMysqlType(v.DataType)+`},`)
+			sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`</if>`)
+		}
+	}
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"</set> ")
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"where id=#{id}")
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</update>`)
 	return sqlSlice
 }
