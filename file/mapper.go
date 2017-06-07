@@ -4,16 +4,13 @@ mapper xml 生成
 package file
 
 import (
-	"bufio"
-	"fmt"
 	"golang/db"
 	"golang/util"
-	"os"
 	"strings"
 )
 
 const (
-	SQL_COLUMN_NAME = "Base_Column_List"
+	SQL_BASE_COLUMN_NAME = "Base_Column_List"
 )
 
 /**
@@ -27,62 +24,58 @@ func GenerateMapper(filepath, packageName, modelName, tableName string, columnSl
 	//mapper 文件中使用的model 全路径，如：com.masz.demo.model.User
 	modelFullPath := packageName + ".model." + modelName
 
-	//删除已经存在的BaseModel
-	os.Remove(fullPath)
-	//创建BaseModel
-	f, _ := os.OpenFile(fullPath, os.O_CREATE, os.ModePerm)
-	defer f.Close()
+	//resultMapName,如UserMap
+	resultMapName := modelName + "Map"
 
-	w := bufio.NewWriter(f)
+	//输入文件的切片
+	inputStr := make([]string, 0, len(columnSlice)*5)
 
-	fmt.Fprintln(w, `<?xml version="1.0" encoding="UTF-8" ?>`)
-	fmt.Fprintln(w, `<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >`)
-	fmt.Fprintln(w, `<mapper namespace="`+modelFullPath+`">`)
-	fmt.Fprintln(w, ``)
+	inputStr = append(inputStr, `<?xml version="1.0" encoding="UTF-8" ?>`)
+	inputStr = append(inputStr, `<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >`)
+	inputStr = append(inputStr, `<mapper namespace="`+modelFullPath+`">`)
+	inputStr = append(inputStr, ``)
 
 	//生成resultMap
-	resultMapSlice := generateResultMap(modelFullPath, modelName, columnSlice)
-	for _, v := range resultMapSlice {
-		fmt.Fprintln(w, v)
-	}
-	fmt.Fprintln(w, ``)
+	resultMapSlice := generateResultMap(modelFullPath, resultMapName, columnSlice)
+	inputStr = append(inputStr, resultMapSlice...)
 
 	//生成所有字段sql
 	columnSql := generateColumnSql(columnSlice)
-	for _, v := range columnSql {
-		fmt.Fprintln(w, v)
-	}
-	fmt.Fprintln(w, ``)
+	inputStr = append(inputStr, columnSql...)
 
 	//生成insert
 	insertSql := generateInsertSql(modelFullPath, tableName, columnSlice)
-	for _, v := range insertSql {
-		fmt.Fprintln(w, v)
-	}
-	fmt.Fprintln(w, ``)
+	inputStr = append(inputStr, insertSql...)
 
-	//生成insert
+	//生成delete sql
+	delSql := generateDelSql(tableName)
+	inputStr = append(inputStr, delSql...)
+
+	//生成update sql
 	updateSql := generateUpdateSql(modelFullPath, tableName, columnSlice)
-	for _, v := range updateSql {
-		fmt.Fprintln(w, v)
-	}
-	fmt.Fprintln(w, ``)
+	inputStr = append(inputStr, updateSql...)
 
-	fmt.Fprintln(w, `</mapper>`)
-	w.Flush()
+	//生成getsql
+	getSql := generateGetSql(tableName, resultMapName)
+	inputStr = append(inputStr, getSql...)
 
+	inputStr = append(inputStr, `</mapper>`)
+
+	//写入文件
+	writeFile(fullPath, inputStr)
 }
 
 /**
 生成resultMap
 */
-func generateResultMap(modelFullPath, modelName string, columnSlice []db.Column) []string {
+func generateResultMap(modelFullPath, resultMapName string, columnSlice []db.Column) []string {
 	resultMapSlice := make([]string, 0, len(columnSlice))
 
-	resultMapSlice = append(resultMapSlice, javaCodeRetractSpace_1+`<resultMap type="`+modelFullPath+`" id="`+modelName+`Map">`)
+	resultMapSlice = append(resultMapSlice, javaCodeRetractSpace_1+`<resultMap type="`+modelFullPath+`" id="`+resultMapName+`">`)
 	resultSlice := generateResult(columnSlice)
 	resultMapSlice = append(resultMapSlice, resultSlice...)
 	resultMapSlice = append(resultMapSlice, javaCodeRetractSpace_1+`</resultMap>`)
+	resultMapSlice = append(resultMapSlice, ``)
 	return resultMapSlice
 }
 
@@ -102,6 +95,7 @@ func generateResult(columnSlice []db.Column) []string {
 		}
 		resultSlice = append(resultSlice, javaCodeRetractSpace_2+`<`+resultTag+` column="`+strings.ToUpper(c.Name)+`" jdbcType="`+jdbcJavaTypeMap.JdbcType+`" property="`+property+`"/>`)
 	}
+	resultSlice = append(resultSlice, ``)
 	return resultSlice
 }
 
@@ -111,7 +105,7 @@ func generateResult(columnSlice []db.Column) []string {
 func generateColumnSql(columnSlice []db.Column) []string {
 	length := len(columnSlice)
 	sqlSegmentSlice := make([]string, 0, length)
-	sqlSegmentSlice = append(sqlSegmentSlice, javaCodeRetractSpace_1+`<sql id="`+SQL_COLUMN_NAME+`">`)
+	sqlSegmentSlice = append(sqlSegmentSlice, javaCodeRetractSpace_1+`<sql id="`+SQL_BASE_COLUMN_NAME+`">`)
 	c := ""
 	for i, v := range columnSlice {
 		c = javaCodeRetractSpace_2 + strings.ToUpper(v.Name) + ","
@@ -121,6 +115,8 @@ func generateColumnSql(columnSlice []db.Column) []string {
 		sqlSegmentSlice = append(sqlSegmentSlice, c)
 	}
 	sqlSegmentSlice = append(sqlSegmentSlice, javaCodeRetractSpace_1+`</sql>`)
+
+	sqlSegmentSlice = append(sqlSegmentSlice, ``)
 	return sqlSegmentSlice
 }
 
@@ -155,6 +151,20 @@ func generateInsertSql(modelFullPath, tableName string, columnSlice []db.Column)
 
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</insert>`)
 
+	sqlSlice = append(sqlSlice, ``)
+	return sqlSlice
+}
+
+/**
+delete sql
+*/
+func generateDelSql(tableName string) []string {
+	sqlSlice := make([]string, 0, 4)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<delete id="delete" parameterType="long" >`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`delete from `+tableName)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`where id = #{id}`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</delete>`)
+	sqlSlice = append(sqlSlice, ``)
 	return sqlSlice
 }
 
@@ -177,5 +187,19 @@ func generateUpdateSql(modelFullPath, tableName string, columnSlice []db.Column)
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"</set> ")
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"where id=#{id}")
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</update>`)
+	sqlSlice = append(sqlSlice, ``)
+	return sqlSlice
+}
+
+/**
+生成get 语句
+*/
+func generateGetSql(tableName, resultMapName string) []string {
+	sqlSlice := make([]string, 0, 4)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<select id="get" parameterType="long" resultMap="`+resultMapName+`">`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`select <include refid="`+SQL_BASE_COLUMN_NAME+`" /> from `+tableName)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`where id = #{id}`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</select>`)
+	sqlSlice = append(sqlSlice, ``)
 	return sqlSlice
 }
