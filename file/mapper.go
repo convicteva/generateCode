@@ -93,7 +93,7 @@ func generateResult(columnSlice []db.Column) []string {
 		} else {
 			resultTag = "result"
 		}
-		resultSlice = append(resultSlice, javaCodeRetractSpace_2+`<`+resultTag+` column="`+c.Name+`" jdbcType="`+jdbcJavaTypeMap.JdbcType+`" property="`+property+`"/>`)
+		resultSlice = append(resultSlice, javaCodeRetractSpace_2+`<`+resultTag+` column="`+strings.ToUpper(c.Name)+`" jdbcType="`+jdbcJavaTypeMap.JdbcType+`" property="`+property+`"/>`)
 	}
 	return resultSlice
 }
