@@ -55,9 +55,21 @@ func GenerateMapper(filepath, packageName, modelName, tableName string, columnSl
 	updateSql := generateUpdateSql(modelFullPath, tableName, columnSlice)
 	inputStr = append(inputStr, updateSql...)
 
+	//生成count sql
+	consql := generateCoun(tableName, columnSlice)
+	inputStr = append(inputStr, consql...)
+
 	//生成getsql
 	getSql := generateGetSql(tableName, resultMapName)
 	inputStr = append(inputStr, getSql...)
+
+	//生成findList
+	findListSql := generateFindListSql(tableName, resultMapName, columnSlice)
+	inputStr = append(inputStr, findListSql...)
+
+	//生成分页查询sql
+	findPageSql := generateFindPageSql(tableName, resultMapName, columnSlice)
+	inputStr = append(inputStr, findPageSql...)
 
 	inputStr = append(inputStr, `</mapper>`)
 
@@ -199,6 +211,61 @@ func generateGetSql(tableName, resultMapName string) []string {
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<select id="get" parameterType="long" resultMap="`+resultMapName+`">`)
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`select <include refid="`+SQL_BASE_COLUMN_NAME+`" /> from `+tableName)
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`where id = #{id}`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</select>`)
+	sqlSlice = append(sqlSlice, ``)
+	return sqlSlice
+}
+
+/**
+生成count
+*/
+func generateCoun(tableName string, columnSlice []db.Column) []string {
+	sqlSlice := make([]string, 0, len(columnSlice)*3+5)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<select id="count" parameterType="map" resultType="long">`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`select count(1) from `+tableName)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`<where>`)
+	for _, v := range columnSlice {
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+stringutil.FormatColumnNameToProperty(v.Name)+`!=null">`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+strings.ToUpper(v.Name)+`=#{`+stringutil.FormatTableNameToModelName(v.Name)+`,jdbcType=`+db.GetJdbcTypeByMysqlType(v.DataType)+`}`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`</if>`)
+	}
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`</where>`)
+
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</select>`)
+	sqlSlice = append(sqlSlice, ``)
+	return sqlSlice
+}
+
+//findList
+func generateFindListSql(tableName, resultMapName string, columnSlice []db.Column) []string {
+	sqlSlice := make([]string, 0, 4)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<select id="findList" parameterType="map" resultMap="`+resultMapName+`">`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`select <include refid="`+SQL_BASE_COLUMN_NAME+`" /> from `+tableName)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`<where>`)
+	for _, v := range columnSlice {
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+stringutil.FormatColumnNameToProperty(v.Name)+`!=null">`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+strings.ToUpper(v.Name)+`=#{`+stringutil.FormatTableNameToModelName(v.Name)+`,jdbcType=`+db.GetJdbcTypeByMysqlType(v.DataType)+`}`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`</if>`)
+	}
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`</where>`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</select>`)
+	sqlSlice = append(sqlSlice, ``)
+	return sqlSlice
+}
+
+//findPage
+func generateFindPageSql(tableName, resultMapName string, columnSlice []db.Column) []string {
+	sqlSlice := make([]string, 0, 4)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<select id="findPage" parameterType="map" resultMap="`+resultMapName+`">`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`select <include refid="`+SQL_BASE_COLUMN_NAME+`" /> from `+tableName)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`<where>`)
+	for _, v := range columnSlice {
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+stringutil.FormatColumnNameToProperty(v.Name)+`!=null">`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+strings.ToUpper(v.Name)+`=#{`+stringutil.FormatTableNameToModelName(v.Name)+`,jdbcType=`+db.GetJdbcTypeByMysqlType(v.DataType)+`}`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`</if>`)
+	}
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`</where>`)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`LIMIT #{offset},#{pageSize}`)
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</select>`)
 	sqlSlice = append(sqlSlice, ``)
 	return sqlSlice
