@@ -1,5 +1,7 @@
 package db
 
+import "strings"
+
 /**
 mysql 数据类型对应的jdbc  和 java 的数据类型
 */
@@ -44,4 +46,13 @@ func init() {
 	//mysqlTypeToJava["LONGBLOB"] = "java.util.Date"
 	//mysqlTypeToJava["BLOB"] = "java.util.Date"
 	//mysqlTypeToJava["TINYBLOB"] = "java.util.Date"
+}
+
+func GetJdbcTypeByMysqlType(mysqlType string) string {
+	v, exists := MysqlTypeToJava[strings.ToUpper(mysqlType)]
+	if exists {
+		return v.JdbcType
+	} else {
+		panic("mysql 数据类型" + mysqlType + ", 不支持")
+	}
 }

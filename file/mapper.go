@@ -52,6 +52,14 @@ func GenerateMapper(filepath, packageName, modelName, tableName string, columnSl
 	for _, v := range columnSql {
 		fmt.Fprintln(w, v)
 	}
+	fmt.Fprintln(w, ``)
+
+	//生成insert
+	insertSql := generateInsertSql(modelFullPath, tableName, columnSlice)
+	for _, v := range insertSql {
+		fmt.Fprintln(w, v)
+	}
+	fmt.Fprintln(w, ``)
 
 	fmt.Fprintln(w, `</mapper>`)
 	w.Flush()
@@ -107,4 +115,38 @@ func generateColumnSql(columnSlice []db.Column) []string {
 	}
 	sqlSegmentSlice = append(sqlSegmentSlice, javaCodeRetractSpace_1+`</sql>`)
 	return sqlSegmentSlice
+}
+
+/**
+生成insert 语句切片
+*/
+func generateInsertSql(modelFullPath, tableName string, columnSlice []db.Column) []string {
+	length := len(columnSlice)
+	sqlSlice := make([]string, 0, length*2+5)
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`<insert id="insert" parameterType="`+modelFullPath+`">`)
+
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"INSERT INTO "+strings.ToUpper(tableName)+"(")
+
+	c := ""
+	for i, v := range columnSlice {
+		c = javaCodeRetractSpace_2 + strings.ToUpper(v.Name) + ","
+		if i == length-1 {
+			c = strings.Replace(c, ",", "", 1)
+		}
+		sqlSlice = append(sqlSlice, c)
+	}
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+")")
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"values(")
+	for i, v := range columnSlice {
+		c = javaCodeRetractSpace_2 + `#{` + stringutil.FormatColumnNameToProperty(v.Name) + `,jdbcType=` + db.GetJdbcTypeByMysqlType(v.DataType) + `},`
+		if i == length-1 {
+			c = strings.Replace(c, "},", "}", -1)
+		}
+		sqlSlice = append(sqlSlice, c)
+	}
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+")")
+
+	sqlSlice = append(sqlSlice, javaCodeRetractSpace_1+`</insert>`)
+
+	return sqlSlice
 }
