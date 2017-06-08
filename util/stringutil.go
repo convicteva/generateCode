@@ -39,6 +39,7 @@ func FormatColumnNameToProperty(columnName string) string {
 		nameSlice := strings.Split(columnName, "_")
 		var propertyName string
 		for i, v := range nameSlice {
+			v = strings.ToLower(v)
 			if i > 0 {
 				propertyName += strings.Title(v)
 			} else {

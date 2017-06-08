@@ -32,6 +32,8 @@ func init() {
 
 	//日期 DATE   TIME  YEAR  不支持
 	MysqlTypeToJava["DATETIME"] = JdbcJavaTypeMap{"DATE", "Date"}
+	MysqlTypeToJava["DATE"] = JdbcJavaTypeMap{"DATE", "Date"}
+	MysqlTypeToJava["TIME"] = JdbcJavaTypeMap{"DATE", "Date"}
 	MysqlTypeToJava["TIMESTAMP"] = JdbcJavaTypeMap{"TIMESTAMP", "Date"}
 
 	//字符串  二进制的不支持
