@@ -5,6 +5,8 @@ package file
 
 import "fmt"
 
+const MybatisDao_NAME = "MyBatisDao"
+
 //生成dao
 func GenerateDao(filePath, packageName, modelName string) {
 
@@ -16,7 +18,7 @@ func GenerateDao(filePath, packageName, modelName string) {
 	inputStr = append(inputStr, "package "+packageName+".dao;")
 	inputStr = append(inputStr, "")
 	inputStr = append(inputStr, "import "+packageName+".model."+modelName+";")
-	inputStr = append(inputStr, "import "+packageName+".dao.base.MyBatisDao;")
+	inputStr = append(inputStr, "import "+packageName+".dao.base."+MybatisDao_NAME+";")
 	inputStr = append(inputStr, "import org.springframework.stereotype.Repository;")
 	inputStr = append(inputStr, "")
 	inputStr = append(inputStr, "@Repository")
