@@ -29,6 +29,12 @@ func main() {
 
 	//生成dao
 	generateDao(dirInfo, tableColumnAndJavaInfoMap)
+
+	//生成manager
+	generateManager(dirInfo, tableColumnAndJavaInfoMap)
+
+	//生成service
+	generateService(dirInfo, tableColumnAndJavaInfoMap)
 }
 
 func createModel(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
@@ -51,5 +57,19 @@ func generateDao(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db
 	//生成mapper
 	for tabelName, _ := range tableColumnAndJavaInfoMap {
 		file.GenerateDao(dirInfo.DaoPath, packageName, stringutil.FormatTableNameToModelName(tabelName))
+	}
+}
+
+func generateManager(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
+	//生成mapper
+	for tabelName, _ := range tableColumnAndJavaInfoMap {
+		file.GenerateManager(dirInfo.ManagerPath, packageName, stringutil.FormatTableNameToModelName(tabelName))
+	}
+}
+
+func generateService(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
+	//生成mapper
+	for tabelName, _ := range tableColumnAndJavaInfoMap {
+		file.GenerateService(dirInfo.ServicePath, packageName, stringutil.FormatTableNameToModelName(tabelName))
 	}
 }

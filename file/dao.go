@@ -3,8 +3,6 @@ dao 生成
 */
 package file
 
-import "fmt"
-
 const MybatisDao_NAME = "MyBatisDao"
 
 //生成dao
@@ -12,7 +10,6 @@ func GenerateDao(filePath, packageName, modelName string) {
 
 	//文件全路径
 	fullPath := filePath + pathSeparator + modelName + "Dao.java"
-	fmt.Println(fullPath)
 	//输入文件切片
 	inputStr := make([]string, 0, 10)
 	inputStr = append(inputStr, "package "+packageName+".dao;")

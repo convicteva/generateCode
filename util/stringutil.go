@@ -3,7 +3,9 @@
 */
 package stringutil
 
-import "strings"
+import (
+	"strings"
+)
 
 /**
 格式化表名为model 名称
@@ -46,6 +48,17 @@ func FormatColumnNameToProperty(columnName string) string {
 		return propertyName
 	}
 
+}
+
+/**
+首字母小写
+*/
+func ToInitialLower(str string) string {
+	if isBlank(str) {
+		return ""
+	} else {
+		return strings.ToLower(string(str[0])) + string(str[1:])
+	}
 }
 
 /**
