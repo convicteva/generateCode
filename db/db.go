@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"strings"
 )
 
 const (
@@ -35,7 +36,7 @@ func init() {
 /**
 查询所有的表
 */
-func GetTableName() []string {
+func getTableName() []string {
 	if db == nil {
 		panic("db is nil")
 	}
@@ -61,7 +62,7 @@ func GetTableName() []string {
 /**
 查询表的所有字段
 */
-func GetTableColumn(tableName string) []Column {
+func getTableColumn(tableName string) []Column {
 	sqlStr := "SELECT column_name,column_comment,data_type FROM information_schema.COLUMNS WHERE table_name='" + tableName + "' AND table_schema = '" + databaseName + "'"
 	rows, err := db.Query(sqlStr)
 	columnSlice := make([]Column, 0, 10)
@@ -71,9 +72,28 @@ func GetTableColumn(tableName string) []Column {
 		var dataType string
 		for rows.Next() {
 			rows.Scan(&name, &comment, &dataType)
-			columnSlice = append(columnSlice, Column{name, comment, dataType})
+			columnSlice = append(columnSlice, Column{strings.ToUpper(name), comment, dataType})
 		}
 		return columnSlice
 	}
 	return columnSlice
+}
+
+func GetTableInfo(tableNameSlice []string) map[string][]SqlColumnAndJavaPropertiesInfo {
+
+	//返回值，以table name 为key
+	columnAndJavaInfo := make(map[string][]SqlColumnAndJavaPropertiesInfo)
+
+	if tableNameSlice == nil {
+		tableNameSlice = getTableName()
+	}
+
+	tableColumnMap := make(map[string][]Column)
+	for _, v := range tableNameSlice {
+		tableColumnMap[v] = getTableColumn(v)
+	}
+	for key, columnSlice := range tableColumnMap {
+		columnAndJavaInfo[key] = ColumnInfo2JavaInfo(columnSlice)
+	}
+	return columnAndJavaInfo
 }

@@ -19,35 +19,30 @@ func main() {
 	dirInfo := file.CreatePackage(packageName)
 
 	//表对应的字段  map
-	tableColumnMap := make(map[string][]db.Column)
-	//所有的表
-	tableNameSlice := db.GetTableName()
-	for _, v := range tableNameSlice {
-		tableColumnMap[v] = db.GetTableColumn(v)
-	}
+	columnAndJavaInfoMap := db.GetTableInfo(nil)
 
 	//生成model
-	createModel(dirInfo, tableColumnMap)
+	createModel(dirInfo, columnAndJavaInfoMap)
 
 	//生成mapper
-	createMapper(dirInfo, tableColumnMap)
+	createMapper(dirInfo, columnAndJavaInfoMap)
 }
 
-func createModel(dirInfo file.DirInfo, tableColumnMap map[string][]db.Column) {
+func createModel(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 
 	//生成BaseModel
 	file.GenerateBaseModel(dirInfo.BaseModelPath, packageName)
 
 	//生成model
-	for tabelName, columns := range tableColumnMap {
-		file.GenerateMode(dirInfo.ModelPath, packageName, stringutil.FormatTableNameToModelName(tabelName), db.GetJavaProertyByColumn(columns))
+	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
+		file.GenerateMode(dirInfo.ModelPath, packageName, stringutil.FormatTableNameToModelName(tabelName), columnAndJavaInfo)
 	}
 
 }
 
-func createMapper(dirInfo file.DirInfo, tableColumnMap map[string][]db.Column) {
+func createMapper(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 	//生成mapper
-	for tabelName, columns := range tableColumnMap {
-		file.GenerateMapper(dirInfo.MapperPath, packageName, stringutil.FormatTableNameToModelName(tabelName), tabelName, columns)
+	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
+		file.GenerateMapper(dirInfo.MapperPath, packageName, stringutil.FormatTableNameToModelName(tabelName), tabelName, columnAndJavaInfo)
 	}
 }

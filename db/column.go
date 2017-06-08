@@ -9,24 +9,24 @@ import (
 )
 
 //所有表中都会有的列，把放入到BaseModel中
-var BaseColumn = make([]Column, 0, 3)
-var baseColumnMap = make(map[string]string, 3)
+var baseColumn = make([]Column, 0, 3)
+var BaseColumnMap = make(map[string]string, 3)
 
 func init() {
 
 	//基础列
-	BaseColumn = append(BaseColumn, Column{"id", "", "BIGINT"})
-	BaseColumn = append(BaseColumn, Column{"remark", "", "VARCHAR"})
-	BaseColumn = append(BaseColumn, Column{"create_time", "", "TIMESTAMP"})
+	baseColumn = append(baseColumn, Column{"id", "", "BIGINT"})
+	baseColumn = append(baseColumn, Column{"remark", "", "VARCHAR"})
+	baseColumn = append(baseColumn, Column{"create_time", "", "TIMESTAMP"})
 
 	//基础列对应的map，生成一般model 时，过滤使用
-	baseColumnMap["id"] = "id"
-	baseColumnMap["remark"] = "remark"
-	baseColumnMap["create_time"] = "create_time"
+	BaseColumnMap["ID"] = "id"
+	BaseColumnMap["REMARK"] = "remark"
+	BaseColumnMap["CREATE_TIME"] = "create_time"
 }
 
 func GetBaseColumn() []Column {
-	return BaseColumn
+	return baseColumn
 }
 
 /**
@@ -42,42 +42,56 @@ type Column struct {
 }
 
 /**
+数据库列信息，包含：列名，注释，列数据类型，列对应的java属性名称，java类型，mybatis 数据类型
+*/
+type SqlColumnAndJavaPropertiesInfo struct {
+	//字段名
+	ColumnName string
+	//注释
+	Comment string
+	//sql 类型
+	SqlDataType string
+
+	//java 属性名称
+	JavaPropertyName string
+
+	//java 类型
+	JavaType string
+
+	//mybatis jdbc 数据类型
+	JdbcType string
+}
+
+/**
 java 属性
 */
 type JavaProperty Column
 
 /**
-把mysql 数据类型，转化成jdbc 和 java数据类型
+根据数据库数据获取 JdbcJavaTypeMap
 */
-func (column *Column) getJavaType() string {
-	v, exists := MysqlTypeToJava[strings.ToUpper(column.DataType)]
+func getJdbcJavaTypeMapBySqlType(sqlDataType string) JdbcJavaTypeMap {
+	v, exists := MysqlTypeToJava[strings.ToUpper(sqlDataType)]
 	if exists {
-		return v.JavaType
+		return v
 	} else {
-		panic(column.DataType + ",mysql 数据类型映射未找到")
+		panic(sqlDataType + ",mysql 数据类型映射未找到")
 	}
 }
 
 /**
-生成BaseModel 中的列的 java 属性
+表的列，转化成列信息，和java属性信息
+返回 SqlColumnAndJavaPropertiesInfo 切片
 */
-func GetJavaBaseProertyByColumn(columns []Column) []JavaProperty {
-	propertySlice := make([]JavaProperty, 0, 10)
+func ColumnInfo2JavaInfo(columns []Column) []SqlColumnAndJavaPropertiesInfo {
+	columnAndJavaInfoSlice := make([]SqlColumnAndJavaPropertiesInfo, 0, len(columns))
 	for _, c := range columns {
-		propertySlice = append(propertySlice, JavaProperty{stringutil.FormatColumnNameToProperty(c.Name), c.Comment, c.getJavaType()})
+		jdbcJavaTypeMap := getJdbcJavaTypeMapBySqlType(c.DataType)
+		columnAndJavaInfoSlice = append(columnAndJavaInfoSlice,
+			SqlColumnAndJavaPropertiesInfo{c.Name, c.Comment, c.DataType,
+				stringutil.FormatColumnNameToProperty(c.Name),
+				jdbcJavaTypeMap.JavaType,
+				jdbcJavaTypeMap.JdbcType})
 	}
-	return propertySlice
-}
-
-/**
-根据column 获取java 的类型，去除BaseModel 中的列
-*/
-func GetJavaProertyByColumn(columns []Column) []JavaProperty {
-	propertySlice := make([]JavaProperty, 0, 10)
-	for _, c := range columns {
-		if _, exists := baseColumnMap[strings.ToLower(c.Name)]; !exists {
-			propertySlice = append(propertySlice, JavaProperty{stringutil.FormatColumnNameToProperty(c.Name), c.Comment, c.getJavaType()})
-		}
-	}
-	return propertySlice
+	return columnAndJavaInfoSlice
 }
