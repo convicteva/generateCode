@@ -19,30 +19,37 @@ func main() {
 	dirInfo := file.CreatePackage(packageName)
 
 	//表对应的字段  map
-	columnAndJavaInfoMap := db.GetTableInfo(nil)
+	tableColumnAndJavaInfoMap := db.GetTableInfo(nil)
 
 	//生成model
-	createModel(dirInfo, columnAndJavaInfoMap)
+	createModel(dirInfo, tableColumnAndJavaInfoMap)
 
 	//生成mapper
-	createMapper(dirInfo, columnAndJavaInfoMap)
+	createMapper(dirInfo, tableColumnAndJavaInfoMap)
+
+	//生成dao
+	generateDao(dirInfo, tableColumnAndJavaInfoMap)
 }
 
 func createModel(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
-
 	//生成BaseModel
 	file.GenerateBaseModel(dirInfo.BaseModelPath, packageName)
-
 	//生成model
 	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
 		file.GenerateMode(dirInfo.ModelPath, packageName, stringutil.FormatTableNameToModelName(tabelName), columnAndJavaInfo)
 	}
-
 }
 
 func createMapper(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 	//生成mapper
 	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
 		file.GenerateMapper(dirInfo.MapperPath, packageName, stringutil.FormatTableNameToModelName(tabelName), tabelName, columnAndJavaInfo)
+	}
+}
+
+func generateDao(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
+	//生成mapper
+	for tabelName, _ := range tableColumnAndJavaInfoMap {
+		file.GenerateDao(dirInfo.DaoPath, packageName, stringutil.FormatTableNameToModelName(tabelName))
 	}
 }
