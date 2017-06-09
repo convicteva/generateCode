@@ -58,7 +58,8 @@ func GenerateBaseModel(filepath, packageName string) {
 func generateImportByProperties(columnAndJavaInfoSlice []db.SqlColumnAndJavaPropertiesInfo) []string {
 	javaImportSlice := make([]string, 0, 10)
 	for _, c := range columnAndJavaInfoSlice {
-		if strings.EqualFold(c.JavaType, "Date") && c {
+		existsImport:=strings.Join(javaImportSlice,"-")
+		if strings.EqualFold(c.JavaType, "Date") && strings.Index(existsImport,c.JavaType)<0 {
 			javaImportSlice = append(javaImportSlice, "import java.util.Date;")
 		}
 	}
