@@ -4,9 +4,6 @@ mybatis mapper 生成器
 package main
 
 import (
-//"golang/db"
-)
-import (
 	"golang/db"
 	"golang/file"
 	"golang/util"
