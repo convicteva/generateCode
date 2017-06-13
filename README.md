@@ -4,10 +4,15 @@ golang 语言实现mysql 对应mybatis mapper ,java 类，manager , service 生�
 示例：
 tb_admin 表：
 CREATE TABLE `tb_admin` (
-  `ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `NAME` VARCHAR(64) DEFAULT NULL,
-  `pass` VARCHAR(128) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
+
+`ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
+
+`NAME` VARCHAR(64) DEFAULT NULL,
+
+`pass` VARCHAR(128) DEFAULT NULL,
+
+ PRIMARY KEY (`ID`)
+
 ) ENGINE=INNODB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 
 生成mapper 文件：
