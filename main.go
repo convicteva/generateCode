@@ -4,6 +4,7 @@ mybatis mapper 生成器
 package main
 
 import (
+	"golang/config"
 	"golang/db"
 	"golang/file"
 	"golang/util"
@@ -11,9 +12,6 @@ import (
 	"runtime"
 	"strings"
 )
-
-//基本包名
-var packageName string = "com.masz.demo"
 
 //输出代码目录
 var root_path string = ""
@@ -33,7 +31,7 @@ func init() {
 
 func main() {
 	//生成相关目录
-	dirInfo := file.CreatePackage(root_path, packageName)
+	dirInfo := file.CreatePackage(root_path, config.Project_package_name)
 
 	//表对应的字段  map
 	tableColumnAndJavaInfoMap := db.GetTableInfo(nil)
@@ -56,37 +54,37 @@ func main() {
 
 func createModel(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 	//生成BaseModel
-	file.GenerateBaseModel(dirInfo.BaseModelPath, packageName)
+	file.GenerateBaseModel(dirInfo.BaseModelPath, config.Project_package_name)
 	//生成model
 	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
-		file.GenerateMode(dirInfo.ModelPath, packageName, stringutil.FormatTableNameToModelName(tabelName), columnAndJavaInfo)
+		file.GenerateMode(dirInfo.ModelPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName), columnAndJavaInfo)
 	}
 }
 
 func createMapper(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 	//生成mapper
 	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
-		file.GenerateMapper(dirInfo.MapperPath, packageName, stringutil.FormatTableNameToModelName(tabelName), tabelName, columnAndJavaInfo)
+		file.GenerateMapper(dirInfo.MapperPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName), tabelName, columnAndJavaInfo)
 	}
 }
 
 func generateDao(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 	//生成mapper
 	for tabelName, _ := range tableColumnAndJavaInfoMap {
-		file.GenerateDao(dirInfo.DaoPath, packageName, stringutil.FormatTableNameToModelName(tabelName))
+		file.GenerateDao(dirInfo.DaoPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
 	}
 }
 
 func generateManager(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 	//生成mapper
 	for tabelName, _ := range tableColumnAndJavaInfoMap {
-		file.GenerateManager(dirInfo.ManagerPath, packageName, stringutil.FormatTableNameToModelName(tabelName))
+		file.GenerateManager(dirInfo.ManagerPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
 	}
 }
 
 func generateService(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 	//生成mapper
 	for tabelName, _ := range tableColumnAndJavaInfoMap {
-		file.GenerateService(dirInfo.ServicePath, packageName, stringutil.FormatTableNameToModelName(tabelName))
+		file.GenerateService(dirInfo.ServicePath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
 	}
 }

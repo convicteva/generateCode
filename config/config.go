@@ -8,4 +8,7 @@ const (
 	PASSWD              = "Hyg&2EaZccHM3cbu"
 	MAXOPENCONNS int    = 5
 	MAXIDLECONNS int    = 2
+
+	//项目包名
+	Project_package_name string = "com.masz.demo"
 )
