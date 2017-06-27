@@ -8,27 +8,6 @@ import (
 	"strings"
 )
 
-//所有表中都会有的列，把放入到BaseModel中
-var baseColumn = make([]Column, 0, 3)
-var BaseColumnMap = make(map[string]string, 3)
-
-func init() {
-
-	//基础列
-	baseColumn = append(baseColumn, Column{"id", "", "BIGINT"})
-	baseColumn = append(baseColumn, Column{"remark", "", "VARCHAR"})
-	baseColumn = append(baseColumn, Column{"create_time", "", "TIMESTAMP"})
-
-	//基础列对应的map，生成一般model 时，过滤使用
-	BaseColumnMap["ID"] = "id"
-	BaseColumnMap["REMARK"] = "remark"
-	BaseColumnMap["CREATE_TIME"] = "create_time"
-}
-
-func GetBaseColumn() []Column {
-	return baseColumn
-}
-
 /**
 表字段定义
 */
@@ -61,11 +40,6 @@ type SqlColumnAndJavaPropertiesInfo struct {
 	//mybatis jdbc 数据类型
 	JdbcType string
 }
-
-/**
-java 属性
-*/
-type JavaProperty Column
 
 /**
 根据数据库数据获取 JdbcJavaTypeMap
