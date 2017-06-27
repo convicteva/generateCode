@@ -8,9 +8,9 @@ import (
 /**
 创建相关目录并返回所有目录
 */
-func CreatePackage(packageName string) DirInfo {
+func CreatePackage(root_path, packageName string) DirInfo {
 	var basePath string
-	basePath = "demo" + pathSeparator + "src" + pathSeparator + "main" + pathSeparator
+	basePath = root_path + "demo" + pathSeparator + "src" + pathSeparator + "main" + pathSeparator
 
 	var codeBasePath string
 	codeBasePath = basePath + "java" + pathSeparator

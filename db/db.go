@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	ip           string = "192.168.157.128:3306"
-	databaseName string = "cs"
-	username     string = "root"
-	passwd              = "Abc123!@#"
+	ip           string = "10.32.15.22:3306"
+	databaseName string = "ecejservice"
+	username     string = "userservice"
+	passwd              = "Hyg&2EaZccHM3cbu"
 	maxOpenConns int    = 5
 	maxIdleConns int    = 2
 )

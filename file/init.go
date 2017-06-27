@@ -22,8 +22,6 @@ func init() {
 写入文件
 */
 func writeFile(fullPath string, inputStr []string) {
-	//删除已经存在的BaseModel
-	os.Remove(fullPath)
 	//创建mapper 文件
 	f, _ := os.OpenFile(fullPath, os.O_CREATE, os.ModePerm)
 	defer f.Close()
