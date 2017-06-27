@@ -7,26 +7,18 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"golang/config"
 	"strings"
-)
-
-const (
-	ip           string = "10.32.15.22:3306"
-	databaseName string = "ecejservice"
-	username     string = "userservice"
-	passwd              = "Hyg&2EaZccHM3cbu"
-	maxOpenConns int    = 5
-	maxIdleConns int    = 2
 )
 
 var db *sql.DB = nil
 
 func init() {
-	sqlUrl := username + ":" + passwd + "@tcp(" + ip + ")/" + databaseName + "?charset=utf8"
+	sqlUrl := config.USERNAME + ":" + config.PASSWD + "@tcp(" + config.IP + ")/" + config.DATABASENAME + "?charset=utf8"
 	db, _ = sql.Open("mysql", sqlUrl)
 	if db != nil {
-		db.SetMaxOpenConns(maxOpenConns)
-		db.SetMaxIdleConns(maxIdleConns)
+		db.SetMaxOpenConns(config.MAXOPENCONNS)
+		db.SetMaxIdleConns(config.MAXIDLECONNS)
 		db.Ping()
 	} else {
 		panic("db open fail")
@@ -40,7 +32,7 @@ func getTableName() []string {
 	if db == nil {
 		panic("db is nil")
 	}
-	sqlStr := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + databaseName + "'"
+	sqlStr := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + config.DATABASENAME + "'"
 	rows, err := db.Query(sqlStr)
 	defer rows.Close()
 
@@ -63,7 +55,7 @@ func getTableName() []string {
 查询表的所有字段
 */
 func getTableColumn(tableName string) []Column {
-	sqlStr := "SELECT column_name,column_comment,data_type FROM information_schema.COLUMNS WHERE table_name='" + tableName + "' AND table_schema = '" + databaseName + "'"
+	sqlStr := "SELECT column_name,column_comment,data_type FROM information_schema.COLUMNS WHERE table_name='" + tableName + "' AND table_schema = '" + config.DATABASENAME + "'"
 	rows, err := db.Query(sqlStr)
 	columnSlice := make([]Column, 0, 10)
 	if err == nil {
