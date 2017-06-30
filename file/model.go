@@ -111,7 +111,8 @@ func generateGeterSeterFuncByProperties(columnAndJavaInfoSlice []db.SqlColumnAnd
 /**
 生成model
 */
-func GenerateMode(filepath, packageName, modelName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
+func GenerateMode(filepath, modelName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
+	packageName := config.Project_package_name
 
 	//过滤掉BaseModel 中的属性
 	commomModelColumnAndJavaInfo := make([]db.SqlColumnAndJavaPropertiesInfo, 0, len(columnAndJavaInfo))

@@ -40,20 +40,22 @@ func main() {
 	file.GenerateBaseModel(dirInfo.BaseModelPath, config.Project_package_name)
 
 	for tableName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
+		//表名对应的modelName
 		modelName := stringutil.FormatTableNameToModelName(tableName)
+
 		//生成model
-		file.GenerateMode(dirInfo.ModelPath, config.Project_package_name, modelName, columnAndJavaInfo)
+		file.GenerateMode(dirInfo.ModelPath, modelName, columnAndJavaInfo)
 
 		//生成dao
-		file.GenerateDao(dirInfo.DaoPath, config.Project_package_name, modelName)
+		file.GenerateDao(dirInfo.DaoPath, modelName)
 
 		//生成mapper
-		file.GenerateMapper(dirInfo.MapperPath, config.Project_package_name, modelName, tableName, columnAndJavaInfo)
+		file.GenerateMapper(dirInfo.MapperPath, modelName, tableName, columnAndJavaInfo)
 
 		//生成manager
-		file.GenerateManager(dirInfo.ManagerPath, config.Project_package_name, modelName)
+		file.GenerateManager(dirInfo.ManagerPath, modelName)
 
 		//生成service
-		file.GenerateService(dirInfo.ServicePath, config.Project_package_name, modelName)
+		file.GenerateService(dirInfo.ServicePath, modelName)
 	}
 }

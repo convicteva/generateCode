@@ -4,13 +4,17 @@ manager 生成
 package file
 
 import (
+	"golang/config"
 	"golang/util"
 )
 
 /**
 生成manager
 */
-func GenerateManager(filePath, packageName, modelName string) {
+func GenerateManager(filePath, modelName string) {
+
+	packageName := config.Project_package_name
+
 	//文件全路径
 	fullPath := filePath + pathSeparator + modelName + "Manager.java"
 	//输入文件切片

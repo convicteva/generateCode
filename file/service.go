@@ -3,12 +3,16 @@
 */
 package file
 
-import "golang/util"
+import (
+	"golang/config"
+	"golang/util"
+)
 
 /**
 生成manager
 */
-func GenerateService(filePath, packageName, modelName string) {
+func GenerateService(filePath, modelName string) {
+	packageName := config.Project_package_name
 	//文件全路径
 	fullPath := filePath + pathSeparator + modelName + "Service.java"
 

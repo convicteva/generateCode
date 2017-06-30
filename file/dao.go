@@ -3,11 +3,13 @@ dao 生成
 */
 package file
 
+import "golang/config"
+
 const MybatisDao_NAME = "MyBatisDao"
 
 //生成dao
-func GenerateDao(filePath, packageName, modelName string) {
-
+func GenerateDao(filePath, modelName string) {
+	packageName := config.Project_package_name
 	//文件全路径
 	fullPath := filePath + pathSeparator + modelName + "Dao.java"
 	//输入文件切片

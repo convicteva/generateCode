@@ -4,6 +4,7 @@ mapper xml 生成
 package file
 
 import (
+	"golang/config"
 	"golang/db"
 	"golang/util"
 	"strings"
@@ -16,7 +17,9 @@ const (
 /**
 生成mapper
 */
-func GenerateMapper(filepath, packageName, modelName, tableName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
+func GenerateMapper(filepath, modelName, tableName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
+
+	packageName := config.Project_package_name
 
 	//文件全路径
 	fullPath := filepath + pathSeparator + modelName + "Mapper.xml"
