@@ -36,55 +36,23 @@ func main() {
 	//表对应的字段  map
 	tableColumnAndJavaInfoMap := db.GetTableInfo(nil)
 
-	//生成model
-	createModel(dirInfo, tableColumnAndJavaInfoMap)
-
-	//生成mapper
-	createMapper(dirInfo, tableColumnAndJavaInfoMap)
-
-	//生成dao
-	generateDao(dirInfo, tableColumnAndJavaInfoMap)
-
-	//生成manager
-	generateManager(dirInfo, tableColumnAndJavaInfoMap)
-
-	//生成service
-	generateService(dirInfo, tableColumnAndJavaInfoMap)
-}
-
-func createModel(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
 	//生成BaseModel
 	file.GenerateBaseModel(dirInfo.BaseModelPath, config.Project_package_name)
-	//生成model
+
 	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
+		//生成model
 		file.GenerateMode(dirInfo.ModelPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName), columnAndJavaInfo)
-	}
-}
 
-func createMapper(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
-	//生成mapper
-	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
-		file.GenerateMapper(dirInfo.MapperPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName), tabelName, columnAndJavaInfo)
-	}
-}
-
-func generateDao(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
-	//生成mapper
-	for tabelName, _ := range tableColumnAndJavaInfoMap {
+		//生成dao
 		file.GenerateDao(dirInfo.DaoPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
-	}
-}
 
-func generateManager(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
-	//生成mapper
-	for tabelName, _ := range tableColumnAndJavaInfoMap {
+		//生成mapper
+		file.GenerateMapper(dirInfo.MapperPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName), tabelName, columnAndJavaInfo)
+
+		//生成manager
 		file.GenerateManager(dirInfo.ManagerPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
-	}
-}
 
-func generateService(dirInfo file.DirInfo, tableColumnAndJavaInfoMap map[string][]db.SqlColumnAndJavaPropertiesInfo) {
-	//生成mapper
-	for tabelName, _ := range tableColumnAndJavaInfoMap {
+		//生成service
 		file.GenerateService(dirInfo.ServicePath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
 	}
 }

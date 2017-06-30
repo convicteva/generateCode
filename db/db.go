@@ -71,6 +71,9 @@ func getTableColumn(tableName string) []Column {
 	return columnSlice
 }
 
+/**
+生成表对应的字段，返回以表名为key，字段人间信息SqlColumnAndJavaPropertiesInfo 切片的map
+*/
 func GetTableInfo(tableNameSlice []string) map[string][]SqlColumnAndJavaPropertiesInfo {
 
 	//返回值，以table name 为key
