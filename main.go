@@ -39,20 +39,21 @@ func main() {
 	//生成BaseModel
 	file.GenerateBaseModel(dirInfo.BaseModelPath, config.Project_package_name)
 
-	for tabelName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
+	for tableName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
+		modelName := stringutil.FormatTableNameToModelName(tableName)
 		//生成model
-		file.GenerateMode(dirInfo.ModelPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName), columnAndJavaInfo)
+		file.GenerateMode(dirInfo.ModelPath, config.Project_package_name, modelName, columnAndJavaInfo)
 
 		//生成dao
-		file.GenerateDao(dirInfo.DaoPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
+		file.GenerateDao(dirInfo.DaoPath, config.Project_package_name, modelName)
 
 		//生成mapper
-		file.GenerateMapper(dirInfo.MapperPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName), tabelName, columnAndJavaInfo)
+		file.GenerateMapper(dirInfo.MapperPath, config.Project_package_name, modelName, tableName, columnAndJavaInfo)
 
 		//生成manager
-		file.GenerateManager(dirInfo.ManagerPath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
+		file.GenerateManager(dirInfo.ManagerPath, config.Project_package_name, modelName)
 
 		//生成service
-		file.GenerateService(dirInfo.ServicePath, config.Project_package_name, stringutil.FormatTableNameToModelName(tabelName))
+		file.GenerateService(dirInfo.ServicePath, config.Project_package_name, modelName)
 	}
 }
