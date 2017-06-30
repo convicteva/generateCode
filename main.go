@@ -43,7 +43,7 @@ func main() {
 	jobs := make(chan bool, len(tableColumnAndJavaInfoMap))
 
 	for tableName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
-		//第一个表，产生一个协程
+		//一个表，产生一个协程
 		go func() {
 			//表名对应的modelName
 			modelName := stringutil.FormatTableNameToModelName(tableName)
