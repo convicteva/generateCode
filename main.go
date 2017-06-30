@@ -39,23 +39,37 @@ func main() {
 	//生成BaseModel
 	file.GenerateBaseModel(dirInfo.BaseModelPath, config.Project_package_name)
 
+	//任务通道,通道长度为表的个数。
+	jobs := make(chan bool, len(tableColumnAndJavaInfoMap))
+
 	for tableName, columnAndJavaInfo := range tableColumnAndJavaInfoMap {
-		//表名对应的modelName
-		modelName := stringutil.FormatTableNameToModelName(tableName)
+		//第一个表，产生一个协程
+		go func() {
+			//表名对应的modelName
+			modelName := stringutil.FormatTableNameToModelName(tableName)
 
-		//生成model
-		file.GenerateMode(dirInfo.ModelPath, modelName, columnAndJavaInfo)
+			//生成model
+			file.GenerateMode(dirInfo.ModelPath, modelName, columnAndJavaInfo)
 
-		//生成dao
-		file.GenerateDao(dirInfo.DaoPath, modelName)
+			//生成dao
+			file.GenerateDao(dirInfo.DaoPath, modelName)
 
-		//生成mapper
-		file.GenerateMapper(dirInfo.MapperPath, modelName, tableName, columnAndJavaInfo)
+			//生成mapper
+			file.GenerateMapper(dirInfo.MapperPath, modelName, tableName, columnAndJavaInfo)
 
-		//生成manager
-		file.GenerateManager(dirInfo.ManagerPath, modelName)
+			//生成manager
+			file.GenerateManager(dirInfo.ManagerPath, modelName)
 
-		//生成service
-		file.GenerateService(dirInfo.ServicePath, modelName)
+			//生成service
+			file.GenerateService(dirInfo.ServicePath, modelName)
+
+			//执行完后，往任务通道中发送一个完成标识
+			jobs <- true
+		}()
 	}
+	for i := 0; i < len(tableColumnAndJavaInfoMap); i++ {
+		//主的 goroutine,等待任务goroutine 执行完成
+		<-jobs
+	}
+	close(jobs)
 }
