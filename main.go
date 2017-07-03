@@ -39,37 +39,81 @@ func main() {
 	//生成BaseModel
 	file.GenerateBaseModel(dirInfo.BaseModelPath, config.Project_package_name)
 
-	//任务通道,通道长度为表的个数。
-	jobs := make(chan bool, len(tableColumnAndJavaInfoMap))
+	//启动goroutine 数量
+	goroutineNum := runtime.NumCPU()
 
-	for k, v := range tableColumnAndJavaInfoMap {
-		//一个表，产生一个协程
-		go func(tableName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
-			//表名对应的modelName
-			modelName := stringutil.FormatTableNameToModelName(tableName)
+	//任务通道
+	jobChannel := make(chan map[string][]db.SqlColumnAndJavaPropertiesInfo, goroutineNum)
+	done := make(chan bool, goroutineNum)
 
-			//生成model
-			file.GenerateMode(dirInfo.ModelPath, modelName, columnAndJavaInfo)
+	//添加job
+	addJob(jobChannel, tableColumnAndJavaInfoMap)
+	//执行job
+	doJob(dirInfo, goroutineNum, jobChannel, done)
+	//等待执行完毕
+	awaitCompletion(goroutineNum, done)
 
-			//生成dao
-			file.GenerateDao(dirInfo.DaoPath, modelName)
+}
 
-			//生成mapper
-			file.GenerateMapper(dirInfo.MapperPath, modelName, tableName, columnAndJavaInfo)
+/**
+添加任务
+*/
+func addJob(jobChannel chan map[string][]db.SqlColumnAndJavaPropertiesInfo, jobs map[string][]db.SqlColumnAndJavaPropertiesInfo) {
+	go func() {
+		for k, v := range jobs {
+			jobChannel <- map[string][]db.SqlColumnAndJavaPropertiesInfo{k: v}
+		}
+		close(jobChannel)
+	}()
+}
 
-			//生成manager
-			file.GenerateManager(dirInfo.ManagerPath, modelName)
-
-			//生成service
-			file.GenerateService(dirInfo.ServicePath, modelName)
-
+/**
+执行任务
+创建 goroutineNum 数量的goroutine
+*/
+func doJob(dirInfo file.DirInfo, goroutineNum int, jobs chan map[string][]db.SqlColumnAndJavaPropertiesInfo, done chan bool) {
+	for i := 0; i < goroutineNum; i++ {
+		go func() {
+			for job := range jobs {
+				for k, v := range job {
+					ganerateFile(dirInfo, k, v)
+				}
+			}
 			//执行完后，往任务通道中发送一个完成标识
-			jobs <- true
-		}(k, v)
+			done <- true
+		}()
 	}
-	for i := 0; i < len(tableColumnAndJavaInfoMap); i++ {
-		//主的 goroutine,等待任务goroutine 执行完成
-		<-jobs
+}
+
+/**
+等待执行完毕
+*/
+func awaitCompletion(gorouniteNum int, done chan bool) {
+	for i := 0; i < gorouniteNum; i++ {
+		<-done
 	}
-	close(jobs)
+	close(done)
+}
+
+/**
+生成文件
+*/
+func ganerateFile(dirInfo file.DirInfo, tableName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
+	//表名对应的modelName
+	modelName := stringutil.FormatTableNameToModelName(tableName)
+
+	//生成model
+	file.GenerateMode(dirInfo.ModelPath, modelName, columnAndJavaInfo)
+
+	//生成dao
+	file.GenerateDao(dirInfo.DaoPath, modelName)
+
+	//生成mapper
+	file.GenerateMapper(dirInfo.MapperPath, modelName, tableName, columnAndJavaInfo)
+
+	//生成manager
+	file.GenerateManager(dirInfo.ManagerPath, modelName)
+
+	//生成service
+	file.GenerateService(dirInfo.ServicePath, modelName)
 }

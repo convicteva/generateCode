@@ -22,7 +22,7 @@ func FormatTableNameToModelName(tableName string) string {
 	var modelName string
 	for _, v := range nameSlice {
 		if v != "tb" {
-			modelName += strings.Title(v)
+			modelName += strings.Title(strings.ToLower(v))
 		}
 	}
 	return modelName
