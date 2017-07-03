@@ -42,6 +42,14 @@ type SqlColumnAndJavaPropertiesInfo struct {
 }
 
 /**
+表对应的字段信息(包含字段对应的java信息)
+*/
+type TableColumnAndJavaInfo struct {
+	TableName  string
+	ColumnInfo []SqlColumnAndJavaPropertiesInfo
+}
+
+/**
 根据数据库数据获取 JdbcJavaTypeMap
 */
 func getJdbcJavaTypeMapBySqlType(sqlDataType string) JdbcJavaTypeMap {

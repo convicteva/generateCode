@@ -34,7 +34,7 @@ func main() {
 	dirInfo := file.CreatePackage(root_path, config.Project_package_name)
 
 	//表对应的字段  map
-	tableColumnAndJavaInfoMap := db.GetTableInfo(nil)
+	tableColumnAndJavaInfo := db.GetTableInfo(nil)
 
 	//生成BaseModel
 	file.GenerateBaseModel(dirInfo.BaseModelPath, config.Project_package_name)
@@ -43,11 +43,11 @@ func main() {
 	goroutineNum := runtime.NumCPU()
 
 	//任务通道
-	jobChannel := make(chan map[string][]db.SqlColumnAndJavaPropertiesInfo, goroutineNum)
+	jobChannel := make(chan db.TableColumnAndJavaInfo, goroutineNum)
 	done := make(chan bool, goroutineNum)
 
 	//添加job
-	addJob(jobChannel, tableColumnAndJavaInfoMap)
+	addJob(jobChannel, tableColumnAndJavaInfo)
 	//执行job
 	doJob(dirInfo, goroutineNum, jobChannel, done)
 	//等待执行完毕
@@ -58,10 +58,10 @@ func main() {
 /**
 添加任务
 */
-func addJob(jobChannel chan map[string][]db.SqlColumnAndJavaPropertiesInfo, jobs map[string][]db.SqlColumnAndJavaPropertiesInfo) {
+func addJob(jobChannel chan db.TableColumnAndJavaInfo, jobs []db.TableColumnAndJavaInfo) {
 	go func() {
-		for k, v := range jobs {
-			jobChannel <- map[string][]db.SqlColumnAndJavaPropertiesInfo{k: v}
+		for _, job := range jobs {
+			jobChannel <- job
 		}
 		close(jobChannel)
 	}()
@@ -71,13 +71,11 @@ func addJob(jobChannel chan map[string][]db.SqlColumnAndJavaPropertiesInfo, jobs
 执行任务
 创建 goroutineNum 数量的goroutine
 */
-func doJob(dirInfo file.DirInfo, goroutineNum int, jobs chan map[string][]db.SqlColumnAndJavaPropertiesInfo, done chan bool) {
+func doJob(dirInfo file.DirInfo, goroutineNum int, jobs chan db.TableColumnAndJavaInfo, done chan bool) {
 	for i := 0; i < goroutineNum; i++ {
 		go func() {
 			for job := range jobs {
-				for k, v := range job {
-					ganerateFile(dirInfo, k, v)
-				}
+				ganerateFile(dirInfo, job)
 			}
 			//执行完后，往任务通道中发送一个完成标识
 			done <- true
@@ -98,7 +96,9 @@ func awaitCompletion(gorouniteNum int, done chan bool) {
 /**
 生成文件
 */
-func ganerateFile(dirInfo file.DirInfo, tableName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
+func ganerateFile(dirInfo file.DirInfo, tableColumnAndJavaInfo db.TableColumnAndJavaInfo) {
+	columnAndJavaInfo := tableColumnAndJavaInfo.ColumnInfo
+	tableName := tableColumnAndJavaInfo.TableName
 	//表名对应的modelName
 	modelName := stringutil.FormatTableNameToModelName(tableName)
 

@@ -74,21 +74,20 @@ func getTableColumn(tableName string) []Column {
 /**
 生成表对应的字段，返回以表名为key，字段人间信息SqlColumnAndJavaPropertiesInfo 切片的map
 */
-func GetTableInfo(tableNameSlice []string) map[string][]SqlColumnAndJavaPropertiesInfo {
+func GetTableInfo(tableNameSlice []string) []TableColumnAndJavaInfo {
 
 	//返回值，以table name 为key
-	columnAndJavaInfo := make(map[string][]SqlColumnAndJavaPropertiesInfo)
+	result := make([]TableColumnAndJavaInfo, 0, 10)
 
+	//如果没有指定的表，则获取所有的表
 	if tableNameSlice == nil {
 		tableNameSlice = getTableName()
 	}
-
-	tableColumnMap := make(map[string][]Column)
 	for _, v := range tableNameSlice {
-		tableColumnMap[v] = getTableColumn(v)
+		//表对应的列
+		column := getTableColumn(v)
+		//将表的列信息，转化为 TableColumnAndJavaInfo
+		result = append(result, TableColumnAndJavaInfo{v, ColumnInfo2JavaInfo(column)})
 	}
-	for key, columnSlice := range tableColumnMap {
-		columnAndJavaInfo[key] = ColumnInfo2JavaInfo(columnSlice)
-	}
-	return columnAndJavaInfo
+	return result
 }
