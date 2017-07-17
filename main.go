@@ -21,7 +21,7 @@ func init() {
 	var system = strings.ToUpper(runtime.GOOS)
 	//根据操作系统使用不同的默认目录。留以后导出使用
 	if strings.EqualFold(system, "WINDOWS") {
-		root_path = ""
+		root_path = "C:\\temp\\"
 	} else if strings.EqualFold(system, "LINUX") {
 		root_path = "/tmp/"
 	}
