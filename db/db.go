@@ -54,17 +54,17 @@ func getTableName() []string {
 /**
 查询表的所有字段
 */
-func getTableColumn(tableName string) []Column {
+func getTableColumn(tableName string) []column {
 	sqlStr := "SELECT column_name,column_comment,data_type FROM information_schema.COLUMNS WHERE table_name='" + tableName + "' AND table_schema = '" + config.DATABASENAME + "'"
 	rows, err := db.Query(sqlStr)
-	columnSlice := make([]Column, 0, 10)
+	columnSlice := make([]column, 0, 10)
 	if err == nil {
 		var name string
 		var comment string
 		var dataType string
 		for rows.Next() {
 			rows.Scan(&name, &comment, &dataType)
-			columnSlice = append(columnSlice, Column{strings.ToUpper(name), comment, dataType})
+			columnSlice = append(columnSlice, column{strings.ToUpper(name), comment, dataType})
 		}
 		return columnSlice
 	}

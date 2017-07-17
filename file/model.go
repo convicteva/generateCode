@@ -16,14 +16,11 @@ func GenerateBaseModel(filepath, packageName string) {
 	//model 全路径
 	fullPath := filepath + pathSeparator + "BaseModel.java"
 
-	//基本列
-	columnSlice := configColumn2DBCColumn(config.BaseColumn[:])
+	//基本列对应的 列和java属性信息
+	columnAndJavaInfo := db.ConfigColumn2JavaInfo(config.BaseColumn[:])
 
 	//写入文件内容切片
-	inputStrSlice := make([]string, 0, len(columnSlice)*4+10)
-
-	//基本列对应的 列和java属性信息
-	columnAndJavaInfo := db.ColumnInfo2JavaInfo(columnSlice)
+	inputStrSlice := make([]string, 0, len(columnAndJavaInfo)*4+10)
 
 	inputStrSlice = append(inputStrSlice, "package "+packageName+".model.base;")
 
@@ -117,7 +114,7 @@ func GenerateMode(filepath, modelName string, columnAndJavaInfo []db.SqlColumnAn
 	//过滤掉BaseModel 中的属性
 	commomModelColumnAndJavaInfo := make([]db.SqlColumnAndJavaPropertiesInfo, 0, len(columnAndJavaInfo))
 	for _, c := range columnAndJavaInfo {
-		if _, exists := config.BaseColumnMap[c.ColumnName]; !exists {
+		if _, exists := config.BaseColumnMap[c.Name]; !exists {
 			commomModelColumnAndJavaInfo = append(commomModelColumnAndJavaInfo, c)
 		}
 	}
@@ -151,15 +148,4 @@ func GenerateMode(filepath, modelName string, columnAndJavaInfo []db.SqlColumnAn
 	//写入文件
 	writeFile(fullPath, inputStrSlice)
 
-}
-
-/**
-把config 的列类型转化成 db包的列类型
-*/
-func configColumn2DBCColumn(columns []config.ConfigColumn) []db.Column {
-	var r = make([]db.Column, 0, len(columns))
-	for _, c := range columns {
-		r = append(r, db.Column{c.Name, c.Comment, c.DataType})
-	}
-	return r
 }

@@ -6,7 +6,6 @@ package file
 import (
 	"golang/config"
 	"golang/db"
-	"golang/util"
 	"strings"
 )
 
@@ -100,12 +99,12 @@ func generateResult(columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) []str
 	resultSlice := make([]string, 0, len(columnAndJavaInfo))
 	resultTag := "result"
 	for _, c := range columnAndJavaInfo {
-		if strings.EqualFold(c.ColumnName, "ID") {
+		if strings.EqualFold(c.Name, "ID") {
 			resultTag = "id"
 		} else {
 			resultTag = "result"
 		}
-		resultSlice = append(resultSlice, javaCodeRetractSpace_2+`<`+resultTag+` column="`+strings.ToUpper(c.ColumnName)+`" jdbcType="`+c.JdbcType+`" property="`+c.JavaPropertyName+`"/>`)
+		resultSlice = append(resultSlice, javaCodeRetractSpace_2+`<`+resultTag+` column="`+strings.ToUpper(c.Name)+`" jdbcType="`+c.JdbcType+`" property="`+c.JavaPropertyName+`"/>`)
 	}
 	return resultSlice
 }
@@ -119,7 +118,7 @@ func generateColumnSql(columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) []
 	sqlSegmentSlice = append(sqlSegmentSlice, javaCodeRetractSpace_1+`<sql id="`+SQL_BASE_COLUMN_NAME+`">`)
 	c := ""
 	for i, v := range columnAndJavaInfo {
-		c = javaCodeRetractSpace_2 + strings.ToUpper(v.ColumnName) + ","
+		c = javaCodeRetractSpace_2 + strings.ToUpper(v.Name) + ","
 		if i == length-1 {
 			c = strings.Replace(c, ",", "", 1)
 		}
@@ -143,7 +142,7 @@ func generateInsertSql(modelFullPath, tableName string, columnAndJavaInfo []db.S
 
 	c := ""
 	for i, v := range columnAndJavaInfo {
-		c = javaCodeRetractSpace_2 + strings.ToUpper(v.ColumnName) + ","
+		c = javaCodeRetractSpace_2 + strings.ToUpper(v.Name) + ","
 		if i == length-1 {
 			c = strings.Replace(c, ",", "", 1)
 		}
@@ -188,9 +187,9 @@ func generateUpdateSql(modelFullPath, tableName string, columnAndJavaInfo []db.S
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"UPDATE "+strings.ToUpper(tableName))
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+"<set>")
 	for _, v := range columnAndJavaInfo {
-		if !strings.EqualFold(strings.ToUpper(v.ColumnName), "ID") {
+		if !strings.EqualFold(strings.ToUpper(v.Name), "ID") {
 			sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+v.JavaPropertyName+`!=null">`)
-			sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+strings.ToUpper(v.ColumnName)+`=#{`+v.JavaPropertyName+`,jdbcType=`+v.JdbcType+`},`)
+			sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+strings.ToUpper(v.Name)+`=#{`+v.JavaPropertyName+`,jdbcType=`+v.JdbcType+`},`)
 			sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`</if>`)
 		}
 	}
@@ -223,8 +222,8 @@ func generateCoun(tableName string, columnAndJavaInfo []db.SqlColumnAndJavaPrope
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`select count(1) from `+tableName)
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`<where>`)
 	for _, v := range columnAndJavaInfo {
-		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+stringutil.FormatColumnNameToProperty(v.JavaPropertyName)+`!=null">`)
-		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+strings.ToUpper(v.ColumnName)+`=#{`+v.JavaPropertyName+`,jdbcType=`+v.JdbcType+`}`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+v.JavaPropertyName+`!=null">`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+strings.ToUpper(v.Name)+`=#{`+v.JavaPropertyName+`,jdbcType=`+v.JdbcType+`}`)
 		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`</if>`)
 	}
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`</where>`)
@@ -242,7 +241,7 @@ func generateFindListSql(tableName, resultMapName string, columnAndJavaInfo []db
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`<where>`)
 	for _, v := range columnAndJavaInfo {
 		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+v.JavaPropertyName+`!=null">`)
-		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+strings.ToUpper(v.ColumnName)+`=#{`+v.JavaPropertyName+`,jdbcType=`+v.JdbcType+`}`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+strings.ToUpper(v.Name)+`=#{`+v.JavaPropertyName+`,jdbcType=`+v.JdbcType+`}`)
 		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`</if>`)
 	}
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`</where>`)
@@ -259,7 +258,7 @@ func generateFindPageSql(tableName, resultMapName string, columnAndJavaInfo []db
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`<where>`)
 	for _, v := range columnAndJavaInfo {
 		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`<if test="`+v.JavaPropertyName+`!=null">`)
-		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+v.ColumnName+`=#{`+v.JavaPropertyName+`,jdbcType=`+v.JdbcType+`}`)
+		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`and `+v.Name+`=#{`+v.JavaPropertyName+`,jdbcType=`+v.JdbcType+`}`)
 		sqlSlice = append(sqlSlice, javaCodeRetractSpace_3+`</if>`)
 	}
 	sqlSlice = append(sqlSlice, javaCodeRetractSpace_2+`</where>`)
