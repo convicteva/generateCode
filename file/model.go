@@ -12,7 +12,7 @@ import (
 /**
 生成BaseModel
 */
-func GenerateBaseModel(filepath, packageName string) {
+func generateBaseModel(filepath, packageName string) {
 	//model 全路径
 	fullPath := filepath + pathSeparator + "BaseModel.java"
 
@@ -108,7 +108,7 @@ func generateGeterSeterFuncByProperties(columnAndJavaInfoSlice []db.SqlColumnAnd
 /**
 生成model
 */
-func GenerateMode(filepath, modelName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
+func generateMode(filepath, modelName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
 	packageName := config.Project_package_name
 
 	//过滤掉BaseModel 中的属性

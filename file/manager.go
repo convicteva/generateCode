@@ -11,7 +11,7 @@ import (
 /**
 生成manager
 */
-func GenerateManager(filePath, modelName string) {
+func generateManager(filePath, modelName string) {
 
 	packageName := config.Project_package_name
 

@@ -11,7 +11,7 @@ import (
 /**
 生成manager
 */
-func GenerateService(filePath, modelName string) {
+func generateService(filePath, modelName string) {
 	packageName := config.Project_package_name
 	//文件全路径
 	fullPath := filePath + pathSeparator + modelName + "Service.java"

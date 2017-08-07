@@ -16,7 +16,7 @@ const (
 /**
 生成mapper
 */
-func GenerateMapper(filepath, modelName, tableName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
+func generateMapper(filepath, modelName, tableName string, columnAndJavaInfo []db.SqlColumnAndJavaPropertiesInfo) {
 
 	packageName := config.Project_package_name
 
