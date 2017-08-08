@@ -16,8 +16,8 @@ func generateService(filePath, modelName string) {
 	//文件全路径
 	fullPath := filePath + pathSeparator + modelName + "Service.java"
 
-	managerName := stringutil.ToInitialLower(modelName) + "Manager"
-	modelNameInitialLower := stringutil.ToInitialLower(modelName)
+	managerName := util.ToInitialLower(modelName) + "Manager"
+	modelNameInitialLower := util.ToInitialLower(modelName)
 
 	//输入文件切片
 	inputStr := make([]string, 0, 10)

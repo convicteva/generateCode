@@ -32,7 +32,7 @@ func generateManager(filePath, modelName string) {
 	inputStr = append(inputStr, "public class "+modelName+"Manager extends AbstractBaseManager<"+modelName+"> {")
 	inputStr = append(inputStr, "")
 	inputStr = append(inputStr, javaCodeRetractSpace_1+"@Resource")
-	inputStr = append(inputStr, javaCodeRetractSpace_1+"private "+modelName+"Dao "+stringutil.ToInitialLower(modelName)+"Dao;")
+	inputStr = append(inputStr, javaCodeRetractSpace_1+"private "+modelName+"Dao "+util.ToInitialLower(modelName)+"Dao;")
 	inputStr = append(inputStr, "")
 	inputStr = append(inputStr, "}")
 	writeFile(fullPath, inputStr)

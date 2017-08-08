@@ -81,7 +81,7 @@ func ganerateFile(dirInfo DirInfo, tableColumnAndJavaInfo db.TableColumnAndJavaI
 	columnAndJavaInfo := tableColumnAndJavaInfo.ColumnInfo
 	tableName := tableColumnAndJavaInfo.TableName
 	//表名对应的modelName
-	modelName := stringutil.FormatTableNameToModelName(tableName)
+	modelName := util.FormatTableNameToModelName(tableName)
 
 	//生成model
 	generateMode(dirInfo.ModelPath, modelName, columnAndJavaInfo)

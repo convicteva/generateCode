@@ -8,13 +8,21 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"golang/config"
+	"golang/configureparse"
 	"strings"
 )
 
 var db *sql.DB = nil
 
-func init() {
-	sqlUrl := config.USERNAME + ":" + config.PASSWD + "@tcp(" + config.IP + ")/" + config.DATABASENAME + "?charset=utf8"
+var dbConfig configureparse.DBConfig = nil
+
+func InitDB(node string) {
+
+	dbConfig, e := configureparse.GetDBConfig(node)
+	if e != nil {
+		panic(e)
+	}
+	sqlUrl := dbConfig.Username + ":" + dbConfig.Passwd + "@tcp(" + dbConfig.Ip + ":" + dbConfig.Port + ")/" + dbConfig.Databasename + "?charset=utf8"
 	db, _ = sql.Open("mysql", sqlUrl)
 	if db != nil {
 		db.SetMaxOpenConns(config.MAXOPENCONNS)
@@ -28,11 +36,8 @@ func init() {
 /**
 查询所有的表
 */
-func getTableName() []string {
-	if db == nil {
-		panic("db is nil")
-	}
-	sqlStr := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + config.DATABASENAME + "'"
+func GetTableName() []string {
+	sqlStr := "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + dbConfig.Databasename + "'"
 	rows, err := db.Query(sqlStr)
 	defer rows.Close()
 
@@ -55,7 +60,7 @@ func getTableName() []string {
 查询表的所有字段
 */
 func getTableColumn(tableName string) []column {
-	sqlStr := "SELECT column_name,column_comment,data_type FROM information_schema.COLUMNS WHERE table_name='" + tableName + "' AND table_schema = '" + config.DATABASENAME + "'"
+	sqlStr := "SELECT column_name,column_comment,data_type FROM information_schema.COLUMNS WHERE table_name='" + tableName + "' AND table_schema = '" + dbConfig.Databasename + "'"
 	rows, err := db.Query(sqlStr)
 	columnSlice := make([]column, 0, 10)
 	if err == nil {
@@ -81,7 +86,7 @@ func GetTableInfo(tableNameSlice []string) []TableColumnAndJavaInfo {
 
 	//如果没有指定的表，则获取所有的表
 	if tableNameSlice == nil {
-		tableNameSlice = getTableName()
+		tableNameSlice = GetTableName()
 	}
 	for _, v := range tableNameSlice {
 		//表对应的列

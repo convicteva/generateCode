@@ -67,7 +67,7 @@ func ColumnInfo2JavaInfo(columns []column) []SqlColumnAndJavaPropertiesInfo {
 	for _, c := range columns {
 		jdbcJavaTypeMap := getJdbcJavaTypeMapBySqlType(c.DataType)
 
-		info := SqlColumnAndJavaPropertiesInfo{JavaPropertyName: stringutil.FormatColumnNameToProperty(c.Name),
+		info := SqlColumnAndJavaPropertiesInfo{JavaPropertyName: util.FormatColumnNameToProperty(c.Name),
 			JavaType: jdbcJavaTypeMap.JavaType,
 			JdbcType: jdbcJavaTypeMap.JdbcType}
 

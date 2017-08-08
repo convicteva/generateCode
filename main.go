@@ -5,6 +5,7 @@ package main
 
 import (
 	"golang/config"
+	"golang/db"
 	"golang/file"
 	"os"
 	"runtime"
@@ -34,6 +35,7 @@ func init() {
 
 func main() {
 
+	db.InitDB("test")
 	file.Generate(dirInfo, nil)
 
 }

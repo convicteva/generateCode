@@ -1,7 +1,7 @@
 /**
 字符串工具
 */
-package stringutil
+package util
 
 import (
 	"strings"
