@@ -88,7 +88,6 @@ func mapTODBConfig(m map[string]string) DBConfig {
 	dbConfig := DBConfig{}
 	dbConfigValue := reflect.ValueOf(&dbConfig).Elem()
 	dbConfigType := reflect.TypeOf(dbConfig)
-	fmt.Println(dbConfigValue.String())
 	num := dbConfigType.NumField()
 	for i := 0; i < num; i++ {
 		field := dbConfigType.Field(i)

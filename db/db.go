@@ -5,7 +5,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"golang/config"
 	"golang/configureparse"
@@ -14,7 +13,7 @@ import (
 
 var db *sql.DB = nil
 
-var dbConfig configureparse.DBConfig = nil
+var dbConfig configureparse.DBConfig
 
 func InitDB(node string) {
 
@@ -50,7 +49,6 @@ func GetTableName() []string {
 		}
 		return nameSlice
 	} else {
-		fmt.Println("GetAllTable execute fail,", err.Error())
 		panic(err)
 	}
 	return nil
@@ -85,7 +83,7 @@ func GetTableInfo(tableNameSlice []string) []TableColumnAndJavaInfo {
 	result := make([]TableColumnAndJavaInfo, 0, 10)
 
 	//如果没有指定的表，则获取所有的表
-	if tableNameSlice == nil {
+	if tableNameSlice == nil || len(tableNameSlice) < 1 {
 		tableNameSlice = GetTableName()
 	}
 	for _, v := range tableNameSlice {

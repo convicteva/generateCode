@@ -8,10 +8,10 @@ const (
 	//数据库连接配置
 	MAXOPENCONNS int = 5
 	MAXIDLECONNS int = 2
-
-	//项目包名
-	Project_package_name string = "com.masz.demo"
 )
+
+//项目包名
+var Project_package_name string = "com.masz.demo"
 
 /**
 不能使用db.Column ，出现循环依赖
