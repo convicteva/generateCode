@@ -153,8 +153,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class AdminDao extends MyBatisDao<Admin> {
-
 }
+
 其中CRUD 方法在 MyBatisDao中已经实现，相映的基类方法，查看dome 工程
 
 使用时依赖mysql 驱动：https://github.com/go-sql-driver/mysql
