@@ -18,14 +18,23 @@ var root_path string = ""
 var dirInfo file.DirInfo
 
 func main() {
+
+}
+
+/**
+生成代码测试
+*/
+func testGenerate() {
 	//将从web 传入
 	var packageName = "com.masz.demo"
 	var node = "test"
 	var tableNameSlice []string = nil
-
 	generate(packageName, node, tableNameSlice)
 }
 
+/**
+生成代码
+*/
 func generate(packageName, node string, tableNameSlice []string) {
 	initBaseInfo(packageName, node)
 	file.Generate(dirInfo, tableNameSlice)
@@ -47,5 +56,4 @@ func initBaseInfo(packageName, node string) {
 	//生成相关目录
 	dirInfo = file.CreatePackage(root_path, config.Project_package_name)
 	db.InitDB(node)
-
 }
