@@ -7,6 +7,8 @@ import (
 	"genereateCode/config"
 	"genereateCode/db"
 	"genereateCode/file"
+	"github.com/gin-gonic/gin"
+	"net/http"
 	"os"
 	"runtime"
 	"strings"
@@ -18,6 +20,12 @@ var root_path string = ""
 var dirInfo file.DirInfo
 
 func main() {
+	router := gin.Default()
+
+	router.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Hello World")
+	})
+	router.Run(":8000")
 
 }
 
