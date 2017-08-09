@@ -13,12 +13,13 @@ import (
 	"strings"
 )
 
+//配置文件地址
+const file_path = "./dbconfig"
+
 func GetDBConfig(node string) (DBConfig, error) {
-	//配置文件地址
-	var file_path = "./dbconfig"
 
 	//配置文件转成的map
-	confMap := findNodeMap(file_path, node)
+	confMap := findNodeMap(node)
 	if len(confMap) < 1 {
 		msg := fmt.Sprintf("%s configure no exists", node)
 		return DBConfig{}, &err.Comerr{msg}
@@ -26,7 +27,46 @@ func GetDBConfig(node string) (DBConfig, error) {
 	return mapTODBConfig(confMap), nil
 }
 
-func findNodeMap(file_path, node string) map[string]string {
+/**
+查询数据库配置的[node] -> node
+*/
+func GetDBConfigNode() []string {
+	f, err := os.Open(file_path)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	nodeSlice := make([]string, 0, 8)
+
+	//读文件
+	r := bufio.NewReader(f)
+	for {
+		//行读取
+		b, _, err := r.ReadLine()
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				panic(err)
+			}
+		}
+		s := strings.TrimSpace(string(b))
+
+		//如果是node。注意：注释和值的部分如果包含 [ ] 没有处理，
+		n1 := strings.Index(s, "[")
+		n2 := strings.Index(s, "]")
+		if n1 == 0 && n2 > 1 {
+			s = strings.Replace(s, "[", "", 1)
+			s = strings.Replace(s, "]", "", 1)
+			nodeSlice = append(nodeSlice, s)
+		}
+	}
+
+	return nodeSlice
+}
+
+func findNodeMap(node string) map[string]string {
 	f, err := os.Open(file_path)
 	if err != nil {
 		panic(err)
