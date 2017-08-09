@@ -4,9 +4,9 @@
 package file
 
 import (
-	"golang/config"
-	"golang/db"
-	"golang/util"
+	"genereateCode/config"
+	"genereateCode/db"
+	"genereateCode/util"
 	"runtime"
 )
 

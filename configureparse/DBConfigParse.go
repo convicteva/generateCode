@@ -6,7 +6,7 @@ package configureparse
 import (
 	"bufio"
 	"fmt"
-	"golang/err"
+	"genereateCode/err"
 	"io"
 	"os"
 	"reflect"

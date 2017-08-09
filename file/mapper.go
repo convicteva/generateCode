@@ -4,8 +4,8 @@ mapper xml 生成
 package file
 
 import (
-	"golang/config"
-	"golang/db"
+	"genereateCode/config"
+	"genereateCode/db"
 	"strings"
 )
 

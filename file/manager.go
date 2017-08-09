@@ -4,8 +4,8 @@ manager 生成
 package file
 
 import (
-	"golang/config"
-	"golang/util"
+	"genereateCode/config"
+	"genereateCode/util"
 )
 
 /**

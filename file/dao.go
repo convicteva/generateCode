@@ -3,7 +3,7 @@ dao 生成
 */
 package file
 
-import "golang/config"
+import "genereateCode/config"
 
 const MybatisDao_NAME = "MyBatisDao"
 

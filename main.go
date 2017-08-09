@@ -4,9 +4,9 @@ mybatis mapper 生成器
 package main
 
 import (
-	"golang/config"
-	"golang/db"
-	"golang/file"
+	"genereateCode/config"
+	"genereateCode/db"
+	"genereateCode/file"
 	"os"
 	"runtime"
 	"strings"

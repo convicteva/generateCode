@@ -5,9 +5,9 @@ package db
 
 import (
 	"database/sql"
+	"genereateCode/config"
+	"genereateCode/configureparse"
 	_ "github.com/go-sql-driver/mysql"
-	"golang/config"
-	"golang/configureparse"
 	"strings"
 )
 

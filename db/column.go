@@ -4,8 +4,8 @@
 package db
 
 import (
-	"golang/config"
-	"golang/util"
+	"genereateCode/config"
+	"genereateCode/util"
 	"strings"
 )
 
