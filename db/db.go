@@ -17,7 +17,8 @@ var dbConfig configureparse.DBConfig
 
 func InitDB(node string) {
 
-	dbConfig, e := configureparse.GetDBConfig(node)
+	var e error
+	dbConfig, e = configureparse.GetDBConfig(node)
 	if e != nil {
 		panic(e)
 	}
