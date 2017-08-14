@@ -25,6 +25,7 @@ $(function(){
 
     //加载数据源对应的表
     function loadTable(node) {
+        selectiveNode = node;
         $.get("/getTable/"+node,function (data) {
             $("#table_name_slice_ul").html("");
             for(var i in data){
@@ -37,6 +38,10 @@ $(function(){
     }
 
 });
+
+//选中结点
+var selectiveNode="";
+
 //点击表事件
 function tab_click() {
 
@@ -45,6 +50,28 @@ function tab_click() {
 //导出代码
 function exportCode(){
     //1、选中的表名
+    var tableNameNodes = $("input[name='tableName']");
+    var tableNames = [];
+    for(var i in tableNameNodes){
+        if(tableNameNodes[i].checked){
+            tableNames.push(tableNameNodes[i].value)
+        }
+    }
+    //包名
+    var packageName = $("#packageName").val();
+    if(!$.trim(packageName)){
+        alert("包名不能为空");
+        return false;
+    }
+    //生成代码
+    var param = {};
+    param["packageName"] = packageName;
+    param["node"] = selectiveNode;
+    param["tableSlice"] = JSON.stringify(tableNames);
+
+    $.post("/generateCode",param,function (data) {
+        console.log(data);
+    })
 
 }
     

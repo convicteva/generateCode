@@ -8,7 +8,9 @@ import (
 	"genereateCode/configureparse"
 	"genereateCode/db"
 	"genereateCode/file"
+	"genereateCode/util"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"os"
 	"runtime"
@@ -46,6 +48,17 @@ func main() {
 		c.JSON(http.StatusOK, db.GetTableName())
 	})
 
+	router.POST("/generateCode", func(c *gin.Context) {
+		var packageName = c.PostForm("packageName")
+		var node = c.PostForm("node")
+		var tableNameStr = c.PostForm("tableSlice")
+		log.Printf("pakcageName : %s, node: %s, talbe slice: %s", packageName, node, tableNameStr)
+
+		tableNameSlice := util.ToSlice(tableNameStr)
+		generate(packageName, node, tableNameSlice)
+
+		c.JSON(http.StatusOK, gin.H{})
+	})
 	router.Run(":8000")
 
 }
