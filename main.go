@@ -5,6 +5,7 @@ package main
 
 import (
 	"genereateCode/config"
+	"genereateCode/configureparse"
 	"genereateCode/db"
 	"genereateCode/file"
 	"github.com/gin-gonic/gin"
@@ -20,11 +21,31 @@ var root_path string = ""
 var dirInfo file.DirInfo
 
 func main() {
+
 	router := gin.Default()
 
+	//静态资源
+	router.Static("/static/js", "./webapp/js")
+	router.Static("/static/css", "./webapp/css")
+	router.Static("/static/img", "./webapp/img")
+
+	//定义模板文件路径
+	router.LoadHTMLGlob("./webapp/templates/*")
+
+	//路由
 	router.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hello World")
+		//数据库配置结点
+		nodeSlice := configureparse.GetDBConfigNode()
+		c.HTML(http.StatusOK, "index.html", gin.H{"nodeSlice": nodeSlice})
 	})
+
+	//数据结点所有的table
+	router.GET("/getTable/:node", func(c *gin.Context) {
+		node := c.Param("node")
+		db.InitDB(node)
+		c.JSON(http.StatusOK, db.GetTableName())
+	})
+
 	router.Run(":8000")
 
 }

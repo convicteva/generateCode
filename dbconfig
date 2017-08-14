@@ -1,6 +1,8 @@
 [test]
-ip=10.32.15.22
+ip=10.4.89.151
 port=3306
 databasename=ecejservice
-username=userservice
-passwd=Hyg&2EaZccHM3cbu
+username=dev_user
+passwd=123qweasd
+[test1]
+[test2]
