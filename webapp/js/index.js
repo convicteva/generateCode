@@ -70,7 +70,10 @@ function exportCode(){
     param["tableSlice"] = JSON.stringify(tableNames);
 
     $.post("/generateCode",param,function (data) {
-        console.log(data);
+        var url = data.url;
+        if(url){
+            location.href=url
+        }
     })
 
 }

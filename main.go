@@ -19,6 +19,7 @@ import (
 
 //输出代码目录
 var root_path string = ""
+var zip_file_path string = ""
 var zip_file_name string = ""
 
 var dirInfo file.DirInfo
@@ -34,6 +35,7 @@ func router() {
 	router.Static("/static/js", "./webapp/js")
 	router.Static("/static/css", "./webapp/css")
 	router.Static("/static/img", "./webapp/img")
+	router.Static("/down", "./webapp/down")
 
 	//定义模板文件路径
 	router.LoadHTMLGlob("./webapp/templates/*")
@@ -62,10 +64,11 @@ func router() {
 		generate(packageName, node, tableNameSlice)
 
 		//生成压缩文件
-		log.Printf("生成压缩文件 s%, s%", root_path, zip_file_name)
-		go util.CreateZip(root_path, zip_file_name)
+		log.Printf("生成压缩文件 s%, s%", root_path, zip_file_path+zip_file_name)
+		util.CreateZip(root_path, zip_file_path+zip_file_name)
 
-		c.JSON(http.StatusOK, gin.H{})
+		c.JSON(http.StatusOK, gin.H{"url": "/down/" + zip_file_name})
+
 	})
 
 	router.Run(":8000")
@@ -96,11 +99,11 @@ func initBaseInfo(packageName, node string) {
 	//根据操作系统使用不同的默认目录。留以后导出使用
 	if strings.EqualFold(system, "WINDOWS") {
 		root_path = "C:\\temp\\generateCode\\"
-		zip_file_name = "C:\\temp\\demo.zip"
 	} else if strings.EqualFold(system, "LINUX") {
 		root_path = "/tmp/generateCode/"
-		zip_file_name = "/tmp/demo.zip"
 	}
+	zip_file_path = "./webapp/down/"
+	zip_file_name = "demo.zip"
 	//删除之前存在的内容
 	os.RemoveAll(root_path)
 
