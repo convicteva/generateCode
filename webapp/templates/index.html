@@ -24,8 +24,8 @@
             <span>
                 <a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#data_source_div').window('open')">添加数据源</a>
             </span>
-            <div id="data_source_div" class="easyui-window" title="添加数据源" data-options="iconCls:'icon-save'" style="width:500px;height:600px;padding:5px;">
-                <div class="easyui-layout easyui-panel" data-options="fit:true">
+            <div id="data_source_div" class="easyui-window" title="添加数据源" data-options="iconCls:'icon-save',minimizable:false,closed:true,maximizable:false,draggable:false,resizable:false,modal:true" style="width:500px;height:600px;padding:5px;">
+                <div class="easyui-layout" data-options="fit:true">
                     <div data-options="region:'center'" style="padding:10px;">
                         <div style="margin-bottom:20px">
                             <div style="margin-bottom:20px">
@@ -55,8 +55,8 @@
                         </div>
                     </div>
                     <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
-                        <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="sub_data_source()" style="width:80px">Ok</a>
-                        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#data_source_div').window('close')" style="width:80px">Cancel</a>
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="sub_data_source()" style="width:80px">提交</a>
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#data_source_div').window('close')" style="width:80px">取消</a>
                     </div>
                 </div>
             </div>
