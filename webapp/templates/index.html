@@ -8,7 +8,7 @@
 </head>
 
 <body>
-<div id="main">
+<div id="main" class="easyui-layout" region="center">
     <div class="easyui-layout" style="width: 100%;height: 8%;">
         <div region="center" title="数据源" style="padding:5px;">
             选择数据源：
@@ -22,8 +22,44 @@
                 </div>
             </div>
             <span>
-                添加数据源
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#data_source_div').window('open')">添加数据源</a>
             </span>
+            <div id="data_source_div" class="easyui-window" title="添加数据源" data-options="iconCls:'icon-save'" style="width:500px;height:600px;padding:5px;">
+                <div class="easyui-layout easyui-panel" data-options="fit:true">
+                    <div data-options="region:'center'" style="padding:10px;">
+                        <div style="margin-bottom:20px">
+                            <div style="margin-bottom:20px">
+                                <div>名称:</div>
+                                <input class="easyui-textbox" id="data_source_node" style="width:100%;height:32px">
+                            </div>
+                            <div style="margin-bottom:20px">
+                                <div>IP:</div>
+                                <input class="easyui-textbox" id="data_source_ip" style="width:100%;height:32px">
+                            </div>
+                            <div style="margin-bottom:20px">
+                                <div>Prot:</div>
+                                <input class="easyui-textbox" id="data_source_port" style="width:100%;height:32px">
+                            </div>
+                            <div style="margin-bottom:20px">
+                                <div>Database name:</div>
+                                <input class="easyui-textbox" id="data_source_databasename" style="width:100%;height:32px">
+                            </div>
+                            <div style="margin-bottom:20px">
+                                <div>user name:</div>
+                                <input class="easyui-textbox" id="data_source_username" style="width:100%;height:32px">
+                            </div>
+                            <div style="margin-bottom:20px">
+                                <div>passwd:</div>
+                                <input class="easyui-textbox" id="data_source_passwd" style="width:100%;height:32px">
+                            </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="sub_data_source()" style="width:80px">Ok</a>
+                        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#data_source_div').window('close')" style="width:80px">Cancel</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="easyui-layout" style="width: 100%;height: 84%;">

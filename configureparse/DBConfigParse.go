@@ -24,6 +24,7 @@ func GetDBConfig(node string) (DBConfig, error) {
 		msg := fmt.Sprintf("%s configure no exists", node)
 		return DBConfig{}, &err.Comerr{msg}
 	}
+	confMap["node"] = node
 	return mapTODBConfig(confMap), nil
 }
 
@@ -117,6 +118,7 @@ func findNodeMap(node string) map[string]string {
 数据库配置 tag 对应的配置文件的key
 */
 type DBConfig struct {
+	Node         string "node"
 	Ip           string "ip"
 	Port         string "port"
 	Databasename string "databasename"
@@ -136,4 +138,57 @@ func mapTODBConfig(m map[string]string) DBConfig {
 		}
 	}
 	return dbConfig
+}
+
+/**
+转成map ， key 为 tag
+*/
+func dbConfigToMap(dbConfig DBConfig) (map[string]string, error) {
+	var result = make(map[string]string)
+	dbConfigValue := reflect.ValueOf(&dbConfig).Elem()
+	dbConfigType := reflect.TypeOf(dbConfig)
+	num := dbConfigValue.NumField()
+	for i := 0; i < num; i++ {
+		field := dbConfigType.Field(i)
+		result[string(field.Tag)] = dbConfigValue.Field(i).String()
+	}
+	return result, nil
+}
+
+/**
+追加数据源配置
+*/
+func AppendDBConfig(dbConfig DBConfig) error {
+	f, err := os.OpenFile(file_path, os.O_APPEND|os.O_CREATE, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	//写入的字符串切片
+	inputStr := make([]string, 0, 6)
+
+	//dbConfig 转成map ， key:tag v:value
+	configMap, err := dbConfigToMap(dbConfig)
+	if err != nil {
+		return err
+	}
+	var nodeStr string
+	for k, v := range configMap {
+		if strings.EqualFold(k, "node") {
+			nodeStr = "[" + v + "]"
+		} else {
+			inputStr = append(inputStr, k+"="+v)
+		}
+	}
+	//写入文件
+	if len(inputStr) > 1 {
+		w := bufio.NewWriter(f)
+		fmt.Fprintln(w, nodeStr)
+		for _, v := range inputStr {
+			fmt.Fprintln(w, v)
+		}
+		w.Flush()
+	}
+	return nil
 }

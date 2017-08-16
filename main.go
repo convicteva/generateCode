@@ -4,6 +4,7 @@ mybatis mapper 生成器
 package main
 
 import (
+	"encoding/json"
 	"genereateCode/config"
 	"genereateCode/configureparse"
 	"genereateCode/db"
@@ -66,11 +67,26 @@ func router() {
 		//生成压缩文件
 		log.Printf("生成压缩文件 s%, s%", root_path, zip_file_path+zip_file_name)
 		util.CreateZip(root_path, zip_file_path+zip_file_name)
-
+		//返回zip的下载地址
 		c.JSON(http.StatusOK, gin.H{"url": "/down/" + zip_file_name})
-
 	})
 
+	//增加数据源
+	router.POST("/addDataSource", func(c *gin.Context) {
+		var dbConfigJsonn = c.PostForm("dataSource")
+		dbConfig := configureparse.DBConfig{}
+		err := json.Unmarshal([]byte(dbConfigJsonn), &dbConfig)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"msg": "fail"})
+		} else {
+			err := configureparse.AppendDBConfig(dbConfig)
+			if err != nil {
+				c.JSON(http.StatusOK, gin.H{"msg": "fail"})
+			} else {
+				c.JSON(http.StatusOK, gin.H{"msg": "OK"})
+			}
+		}
+	})
 	router.Run(":8000")
 }
 

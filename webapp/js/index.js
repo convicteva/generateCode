@@ -3,8 +3,8 @@
  */
 $(function(){
     //设置布局宽高
-    var width = screen.width-25;
-    var height = screen.height-150;
+    var width = screen.width;
+    var height = screen.height-50;
     $("#main").css({"width":width+"px","height":height+"px"});
 
     //数据源下拉
@@ -75,6 +75,25 @@ function exportCode(){
             location.href=url
         }
     })
-
+}
+/**
+ * 添加数据源提交
+ */
+function sub_data_source() {
+    var dataSource ={};
+    dataSource["node"] = $("#data_source_node").val();
+    dataSource["ip"] = $("#data_source_ip").val();
+    dataSource["port"] = $("#data_source_port").val();
+    dataSource["databasename"] = $("#data_source_databasename").val();
+    dataSource["username"] = $("#data_source_username").val();
+    dataSource["passwd"] = $("#data_source_passwd").val();
+    $.post("/addDataSource",{"dataSource":JSON.stringify(dataSource)},function (data) {
+        if(data && data.msg=="OK"){
+            alert("OK")
+            location.reload()
+        }else{
+            alert("fail")
+        }
+    })
 }
     
