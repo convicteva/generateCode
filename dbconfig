@@ -4,21 +4,3 @@ port=3306
 databasename=ecejservice
 username=dev_user
 passwd=123qweasd
-[node]
-ip=ip
-port=prot
-databasename=database name
-username=user name
-passwd=passwd
-[node]
-port=prot
-databasename=database name
-username=user name
-passwd=passwd
-ip=ip
-[node2]
-port=prot
-databasename=data
-username=u
-passwd=p
-ip=ip
