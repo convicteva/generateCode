@@ -16,6 +16,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"sync"
 )
 
 //输出代码目录
@@ -31,6 +32,9 @@ func main() {
 
 func router() {
 	router := gin.Default()
+
+	//互斥锁
+	mutex := sync.Mutex{}
 
 	//静态资源
 	router.Static("/static/js", "./webapp/js")
@@ -56,6 +60,8 @@ func router() {
 	})
 	//生成代码
 	router.POST("/generateCode", func(c *gin.Context) {
+		mutex.Lock()
+		defer mutex.Unlock()
 		var packageName = c.PostForm("packageName")
 		var node = c.PostForm("node")
 		var tableNameStr = c.PostForm("tableSlice")
@@ -73,6 +79,10 @@ func router() {
 
 	//增加数据源
 	router.POST("/addDataSource", func(c *gin.Context) {
+		//互斥锁
+		mutex.Lock()
+		defer mutex.Unlock()
+
 		var dbConfigJsonn = c.PostForm("dataSource")
 		dbConfig := configureparse.DBConfig{}
 		err := json.Unmarshal([]byte(dbConfigJsonn), &dbConfig)
